@@ -1,0 +1,38 @@
+# 1. Importer les outils que tu viens d'installer
+import requests
+from bs4 import BeautifulSoup
+
+print("Lancement du script...")
+
+# 2. Définir l'URL du site que tu veux "visiter"
+# On commence TRÈS simple : un site fait pour les tests.
+url = "http://quotes.toscrape.com/"
+
+# 3. Utiliser "requests" pour obtenir le code HTML de la page
+try:
+    response = requests.get(url)
+    
+    # Vérifier si la requête a fonctionné (code 200 = OK)
+    if response.status_code == 200:
+        print("Connexion au site réussie !")
+        
+        # 4. Utiliser "BeautifulSoup" pour "comprendre" le HTML
+        # response.content c'est tout le code HTML de la page
+        soup = BeautifulSoup(response.content, "html.parser")
+        
+        # 5. Trouver une information précise
+        # Sur ce site, toutes les citations sont dans une balise <span>
+        # avec la classe (class_) "text"
+        citations = soup.find_all('span', class_="text")
+        
+        print(f"J'ai trouvé {len(citations)} citations sur la page :")
+        
+        # 6. Afficher les citations trouvées
+        for c in citations:
+            print(f"- {c.text}") # .text = ne prend que le texte, pas les balises
+            
+    else:
+        print(f"Erreur, le site n'a pas répondu. Code: {response.status_code}")
+
+except Exception as e:
+    print(f"Une erreur est survenue : {e}")
