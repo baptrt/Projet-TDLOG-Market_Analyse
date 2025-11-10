@@ -31,16 +31,29 @@ class YahooNewsSpider(scrapy.Spider):
                 return
 
             for item in news_items:
-                # extraction sécurisée avec .get()
-                title = item.get("title")
-                publisher = item.get("publisher")
-                link = item.get("link")
-                summary = item.get("summary") or item.get("content", "")
-                timestamp = item.get("providerPublishTime")
+                summary_data = item.get("summary") or item.get("content") or {}
 
-                # Conversion de la date si disponible
-                if timestamp:
-                    pub_time = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+                # Récupération sécurisée
+                title = summary_data.get("title")
+                publisher = summary_data.get("provider", {}).get("displayName") \
+                            or summary_data.get("publisher")
+                link = summary_data.get("canonicalUrl", {}).get("url") \
+                    or summary_data.get("link")
+                summary_text = summary_data.get("summary") \
+                            or summary_data.get("description") \
+                            or ""
+                pub_date = summary_data.get("pubDate") or summary_data.get("providerPublishTime")
+
+                # Conversion de date si nécessaire
+                if pub_date:
+                    try:
+                        # pubDate peut être ISO ou timestamp Unix
+                        if isinstance(pub_date, int):
+                            pub_time = datetime.fromtimestamp(pub_date).strftime("%Y-%m-%d %H:%M:%S")
+                        else:
+                            pub_time = datetime.fromisoformat(pub_date.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+                    except Exception:
+                        pub_time = None
                 else:
                     pub_time = None
 
@@ -49,9 +62,10 @@ class YahooNewsSpider(scrapy.Spider):
                     "title": title,
                     "publisher": publisher,
                     "link": link,
-                    "summary": summary,
+                    "summary": summary_text,
                     "time": pub_time,
                 }
+
 
         except Exception as e:
             self.logger.error(f"Erreur lors du traitement de {ticker} : {e}")
