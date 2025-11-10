@@ -57,7 +57,7 @@ class NewsViewer(QtWidgets.QWidget):
         self.company_filter.currentIndexChanged.connect(self.update_table)
         self.search_box.textChanged.connect(self.update_table)
         self.table.itemSelectionChanged.connect(self.show_summary)
-        self.open_button.clicked.connect(self.open_link)
+        self.open_button.clicked.connect(self.show_article)
 
         # Données initiales
         self.update_table()
@@ -93,15 +93,42 @@ class NewsViewer(QtWidgets.QWidget):
             return
 
         item = self.filtered_data[selected]
-        text = f"📰 {item['title']}\n\n{item['summary']}\n\nSource : {item['publisher']}\nDate : {item['time']}"
+        text = f"{item['title']}\n\n{item['summary']}\n\nSource : {item['publisher']}\nDate : {item['time']}"
         self.summary.setText(text)
-        self.current_link = item["link"]
+        self.current_item = item
         self.open_button.setEnabled(True)
+        
 
-    def open_link(self):
-        """Ouvre le lien de l'article dans le navigateur."""
-        if hasattr(self, "current_link"):
-            webbrowser.open(self.current_link)
+    def show_article(self):
+        """Affiche le texte complet de l'article sélectionné dans une nouvelle fenêtre."""
+        if not hasattr(self, "current_item"):
+            return
+
+        item = self.current_item
+        full_text = item.get("full_text", "Texte complet non disponible.")
+
+        # Création d'une fenêtre modale
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle(item["title"])
+        dialog.resize(800, 600)
+
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        header = QtWidgets.QLabel(f"<b>{item['title']}</b><br>{item['publisher']} — {item['time']}")
+        header.setWordWrap(True)
+
+        text_box = QtWidgets.QTextEdit()
+        text_box.setReadOnly(True)
+        text_box.setPlainText(full_text)
+
+        close_button = QtWidgets.QPushButton("Fermer")
+        close_button.clicked.connect(dialog.close)
+
+        layout.addWidget(header)
+        layout.addWidget(text_box)
+        layout.addWidget(close_button)
+
+        dialog.exec()
 
 
 if __name__ == "__main__":
