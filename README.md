@@ -1,1 +1,1 @@
-# Projet-TDLOG-Analyse-de-sentiment-de-marché
+# Projet-TDLOG : Analyse de sentiment de marché
