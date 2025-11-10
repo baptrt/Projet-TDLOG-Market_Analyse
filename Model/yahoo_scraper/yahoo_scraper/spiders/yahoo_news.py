@@ -56,16 +56,36 @@ class YahooNewsSpider(scrapy.Spider):
                         pub_time = None
                 else:
                     pub_time = None
-
-                yield {
-                    "company": ticker,
-                    "title": title,
-                    "publisher": publisher,
-                    "link": link,
-                    "summary": summary_text,
-                    "time": pub_time,
-                }
-
+                    
+                if link:
+                    # On fait maintenant une requête vers la page complète
+                    yield scrapy.Request(
+                        url=link,
+                        callback=self.parse_article,
+                        cb_kwargs={
+                            "ticker": ticker,
+                            "title": title,
+                            "publisher": publisher,
+                            "summary_text": summary_text,
+                            "pub_time": pub_time,
+                        },
+                        dont_filter=True,
+                    )
 
         except Exception as e:
             self.logger.error(f"Erreur lors du traitement de {ticker} : {e}")
+
+    def parse_article(self, response, ticker, title, publisher, summary_text, pub_time):
+        # Essaie d'extraire le texte principal de la page
+        paragraphs = response.xpath('//p//text()').getall()
+        article_text = " ".join(p.strip() for p in paragraphs if p.strip())
+
+        yield {
+            "company": ticker,
+            "title": title,
+            "publisher": publisher,
+            "link": response.url,
+            "summary": summary_text,
+            "time": pub_time,
+            "full_text": article_text,
+        }
