@@ -1,5 +1,16 @@
 # Projet-TDLOG : Analyse de sentiment de marché
 
+## Structure du projet 
+
+```sh
+└── Projet-TDLOG-Market_Analyse/
+    ├── Model
+    │   └── yahoo_scraper
+    ├── README.md
+    └── View
+        └── UI.py
+```
+
 ## Utilisation du scraping 
 
 ### Installation 
