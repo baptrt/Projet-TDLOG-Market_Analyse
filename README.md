@@ -4,6 +4,9 @@
 
 ```sh
 └── Projet-TDLOG-Market_Analyse/
+    ├── Controller
+    │   ├── main.py
+    │   └── sentiment.py
     ├── Model
     │   └── yahoo_scraper
     ├── README.md
