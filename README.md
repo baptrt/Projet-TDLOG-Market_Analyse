@@ -24,6 +24,7 @@
 ### Run
 
 - Terminal : scrapy crawl yahoo_news -o "nom du fichier json dans lequel on souhaite stocker".json
+- Faire tourner en fond le scraping régulier (toutes les heures) : nohup python3 yahoo_scraper/run_scraper.py > scraper.log 2>&1 &
 
 
 ## Utilisation de l'Interface Utilisateur
