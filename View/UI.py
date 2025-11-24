@@ -2,6 +2,71 @@ import json
 import sys
 import webbrowser
 from PyQt6 import QtWidgets, QtCore
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
+class SentimentBarChart(FigureCanvasQTAgg):
+    def __init__(self, parent=None):
+        self.fig = Figure(figsize=(6, 4))
+        super().__init__(self.fig)
+        self.ax = self.fig.add_subplot(111)
+
+    def update_chart(self, data):
+        scores = {}
+
+        for item in data:
+            company = item["company"]
+            probas = item["sentiment_probas"]
+
+            # Score cohérent basé sur toutes les probabilités
+            sentiment_value = (
+                -1 * probas["négatif"]
+                + 0 * probas["neutre"]
+                + 1 * probas["positif"]
+            )
+
+            scores.setdefault(company, []).append(sentiment_value)
+
+        # Moyenne réelle du sentiment
+        avg_scores = {k: sum(v) / len(v) for k, v in scores.items()}
+
+        self.ax.clear()
+
+        companies = list(avg_scores.keys())
+        values = list(avg_scores.values())
+
+        colors = [
+            "green" if s > 0.2 else "yellow" if -0.2 <= s <= 0.2 else "red"
+            for s in values
+        ]
+
+        self.ax.bar(companies, values, color=colors)
+        self.ax.set_ylim(-1, 1)
+        self.ax.set_ylabel("Sentiment moyen (pondéré)")
+        self.ax.set_title("Sentiment par entreprise (moyenne pondérée)")
+
+        self.fig.tight_layout()
+        self.draw()
+
+class ChartWindow(QtWidgets.QDialog):
+    """Fenêtre séparée pour afficher le diagramme à barres."""
+    def __init__(self, data, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Diagramme des sentiments")
+        self.resize(700, 500)
+
+        layout = QtWidgets.QVBoxLayout(self)
+
+        self.chart = SentimentBarChart()
+        layout.addWidget(self.chart)
+
+        # Mettre le graphique à jour
+        self.chart.update_chart(data)
+
+        close_button = QtWidgets.QPushButton("Fermer")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
 
 class NewsViewer(QtWidgets.QWidget):
     def __init__(self, json_file):
@@ -9,20 +74,16 @@ class NewsViewer(QtWidgets.QWidget):
         self.setWindowTitle("News Viewer")
         self.resize(1000, 600)
 
-        # Charger le JSON
         with open(json_file, "r", encoding="utf-8") as f:
             self.data = json.load(f)
-        
-        # Panneau de détails
+
         self.summary = QtWidgets.QTextEdit()
         self.summary.setReadOnly(True)
         self.open_button = QtWidgets.QPushButton("Ouvrir l'article")
         self.open_button.setEnabled(False)
-        
-        # Extraire les noms uniques d'entreprises
+
         self.company_filter = QtWidgets.QComboBox()
         self.company_filter.addItem("Toutes les entreprises")
-        
         companies = sorted(set(item["company"] for item in self.data))
         self.company_filter.addItems(companies)
 
@@ -35,46 +96,45 @@ class NewsViewer(QtWidgets.QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
-        
-        # Layout principal
+
+        self.sentiment_filter = QtWidgets.QComboBox()
+        self.sentiment_filter.addItems(["Tous", "Positif", "Neutre", "Négatif"])
+
+        # BOUTON POUR OUVRIR LA FENÊTRE DE GRAPHIQUE
+        self.chart_button = QtWidgets.QPushButton("Afficher le diagramme des sentiments")
+        self.chart_button.clicked.connect(self.open_chart_window)
+
         top_layout = QtWidgets.QHBoxLayout()
         top_layout.addWidget(QtWidgets.QLabel("Filtrer par entreprise :"))
         top_layout.addWidget(self.company_filter)
         top_layout.addWidget(self.search_box)
+        top_layout.addWidget(QtWidgets.QLabel("Filtrer par sentiment :"))
+        top_layout.addWidget(self.sentiment_filter)
 
         detail_layout = QtWidgets.QVBoxLayout()
         detail_layout.addWidget(QtWidgets.QLabel("Résumé de l'article :"))
         detail_layout.addWidget(self.summary)
         detail_layout.addWidget(self.open_button)
+        detail_layout.addWidget(self.chart_button)
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.table)
         main_layout.addLayout(detail_layout)
 
-        # Widgets principaux
-        self.sentiment_filter = QtWidgets.QComboBox()
-        self.sentiment_filter.addItems(["Tous", "Positif", "Neutre", "Négatif"])
-        self.sentiment_filter.currentIndexChanged.connect(self.update_table)
-        top_layout.addWidget(QtWidgets.QLabel("Filtrer par sentiment :"))
-        top_layout.addWidget(self.sentiment_filter)
-
-        # Connexions
         self.company_filter.currentIndexChanged.connect(self.update_table)
         self.search_box.textChanged.connect(self.update_table)
+        self.sentiment_filter.currentIndexChanged.connect(self.update_table)
         self.table.itemSelectionChanged.connect(self.show_summary)
         self.open_button.clicked.connect(self.show_article)
 
-        # Données initiales
         self.update_table()
 
     def update_table(self):
-        """Met à jour la table selon les filtres."""
         company = self.company_filter.currentText()
         query = self.search_box.text().lower()
         sentiment = self.sentiment_filter.currentText().lower()
 
-        # Filtrage
         filtered = []
         for item in self.data:
             if company != "Toutes les entreprises" and item["company"] != company:
@@ -87,12 +147,10 @@ class NewsViewer(QtWidgets.QWidget):
 
         self.filtered_data = filtered
 
-        # Vider la table
         self.table.setRowCount(0)
         self.summary.clear()
         self.open_button.setEnabled(False)
 
-        # Remplir la table
         self.table.setRowCount(len(filtered))
         for row, item in enumerate(filtered):
             self.table.setItem(row, 0, QtWidgets.QTableWidgetItem(item.get("company", "")))
@@ -103,7 +161,6 @@ class NewsViewer(QtWidgets.QWidget):
             sentiment_text = f"{item['sentiment_label'].capitalize()} ({item['sentiment_score']:.2f})"
             sentiment_item = QtWidgets.QTableWidgetItem(sentiment_text)
 
-            # Coloration
             label = item['sentiment_label'].lower()
             if label == "positif":
                 sentiment_item.setBackground(QtCore.Qt.GlobalColor.green)
@@ -115,32 +172,27 @@ class NewsViewer(QtWidgets.QWidget):
             self.table.setItem(row, 4, sentiment_item)
 
     def show_summary(self):
-        """Affiche le résumé de l'article sélectionné."""
         selected = self.table.currentRow()
         if selected < 0:
             return
 
         item = self.filtered_data[selected]
-        text = f"{item['title']}\n\n{item['summary']}\n\nSource : {item['publisher']}\nDate : {item['time']}"
-        self.summary.setText(text)
-        self.current_item = item
-        self.open_button.setEnabled(True)
-        
         text = (f"{item['title']}\n\n{item['summary']}\n\n"
-        f"Sentiment : {item['sentiment_label'].capitalize()} "
-        f"(score = {item['sentiment_score']:.2f})\n\n"
-        f"Source : {item['publisher']}\nDate : {item['time']}")
+                f"Sentiment : {item['sentiment_label'].capitalize()} "
+                f"(score = {item['sentiment_score']:.2f})\n\n"
+                f"Source : {item['publisher']}\nDate : {item['time']}")
         self.summary.setText(text)
 
+        self.current_item = item
+        self.open_button.setEnabled(True)
+
     def show_article(self):
-        """Affiche le texte complet de l'article sélectionné dans une nouvelle fenêtre."""
         if not hasattr(self, "current_item"):
             return
 
         item = self.current_item
         full_text = item.get("full_text", "Texte complet non disponible.")
 
-        # Création d'une fenêtre modale
         dialog = QtWidgets.QDialog(self)
         dialog.setWindowTitle(item["title"])
         dialog.resize(800, 600)
@@ -163,10 +215,17 @@ class NewsViewer(QtWidgets.QWidget):
 
         dialog.exec()
 
+    def open_chart_window(self):
+        """Ouvre la fenêtre contenant le diagramme à barres."""
+        if not hasattr(self, "filtered_data"):
+            return
+
+        chart_win = ChartWindow(self.filtered_data, self)
+        chart_win.exec()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    viewer = NewsViewer("articles_with_sentiment.json")  
+    viewer = NewsViewer("articles_with_sentiment.json")
     viewer.show()
     sys.exit(app.exec())
-

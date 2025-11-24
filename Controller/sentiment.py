@@ -26,9 +26,10 @@ class FinBERTSentiment:
             "positive": "positif"
         }
 
-    def analyze(self, text: str) -> Tuple[str, float]:
+    def analyze(self, text: str) -> Tuple[str, float, Dict[str, float]]:
         """
-        Analyse un texte et renvoie (label_fr, probabilité_assoc)
+        Analyse un texte et renvoie :
+        (label_fr, probabilité_assoc, dict_probabilités_français)
         """
         inputs = self.tokenizer(text, return_tensors="pt", truncation=True, padding=True)
         outputs = self.model(**inputs)
@@ -46,7 +47,13 @@ class FinBERTSentiment:
         # Score de la classe prédite
         confidence = probs[idx].item()
 
-        return label, confidence
+        # conversion des probas en dictionnaire français
+        probas_dict = {
+            self.label_fr[self.id2label[i]]: probs[i].item()
+            for i in range(len(probs))
+        }
+
+        return label, confidence, probas_dict
 
 
 
@@ -59,7 +66,7 @@ class SentimentAnalyzer:
     def __init__(self):
         self.model = FinBERTSentiment()
 
-    def analyze_article(self, text: str) -> Tuple[str, float]:
+    def analyze_article(self, text: str) -> Tuple[str, float, Dict[str, float]]:
         return self.model.analyze(text)
 
     def analyze_json_file(self, input_json: str, output_json: str = None) -> List[Dict]:
@@ -69,9 +76,11 @@ class SentimentAnalyzer:
         for article in articles:
             # Sécurise si la clé manque
             text = article.get("full_text") or article.get("content") or article.get("text") or ""
-            label, score = self.analyze_article(text)
+            label, score, probas = self.analyze_article(text)
+
             article["sentiment_label"] = label
             article["sentiment_score"] = score
+            article["sentiment_probas"] = probas  # <-- correction principale
 
         if output_json:
             with open(output_json, "w") as f:
