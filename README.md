@@ -29,3 +29,7 @@
 ## Utilisation de l'Interface Utilisateur
 
 - Installer PyQt6 (pip install PyQt6)
+
+### Run 
+
+- Se placer dans le dossier yahoo_scraper (pour accéder au fichier .json)
