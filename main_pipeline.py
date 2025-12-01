@@ -13,7 +13,7 @@ CONTROLLER_FOLDER_PATH   = "/Users/baptistetrt/Desktop/Études/Ponts/TDLOG/Contr
 
 # 2. Configuration des fichiers de sortie
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
-OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
+OUTPUT_DIR = os.path.join(BASE_DIR, "Outputs")
 
 # Fichiers
 FILE_RAW_GLOBAL = os.path.join(OUTPUT_DIR, "global_news.json")        # Entrée 
