@@ -1,6 +1,5 @@
 import json
 import sys
-import webbrowser
 from PyQt6 import QtWidgets, QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -226,6 +225,6 @@ class NewsViewer(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    viewer = NewsViewer("articles_with_sentiment.json")
+    viewer = NewsViewer("Outputs/articles_with_sentiment.json")
     viewer.show()
     sys.exit(app.exec())
