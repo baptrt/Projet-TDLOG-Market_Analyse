@@ -3,7 +3,7 @@ from sentiment import SentimentAnalyzer
 def main():
     analyzer = SentimentAnalyzer()
 
-    articles = analyzer.analyze_json_file("news.json", "articles_with_sentiment.json")
+    articles = analyzer.analyze_json_file("outputs/global_news.json", "articles_with_sentiment.json")
 
     company_scores = analyzer.aggregate_sentiment_by_company(articles)
 

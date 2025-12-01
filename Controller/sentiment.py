@@ -80,7 +80,7 @@ class SentimentAnalyzer:
 
             article["sentiment_label"] = label
             article["sentiment_score"] = score
-            article["sentiment_probas"] = probas  # <-- correction principale
+            article["sentiment_probas"] = probas  
 
         if output_json:
             with open(output_json, "w") as f:
