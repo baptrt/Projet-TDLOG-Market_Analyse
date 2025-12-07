@@ -1,0 +1,20 @@
+[
+    {
+        "company": "TSLA",
+        "title": "Tesla is amazing",
+        "sentiment_label": "positif",
+        "sentiment_score": 0.9
+    },
+    {
+        "company": "TSLA",
+        "title": "Tesla cars have issues",
+        "sentiment_label": "négatif",
+        "sentiment_score": 0.8
+    },
+    {
+        "company": "AAPL",
+        "title": "Apple releases new iPhone",
+        "sentiment_label": "neutre",
+        "sentiment_score": 0.95
+    }
+]
