@@ -1,8 +1,17 @@
-import json
 import sys
+import os
 from PyQt6 import QtWidgets, QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+
+# --- IMPORT SQL (NOUVEAU) ---
+# On ajoute le dossier parent au chemin pour trouver Model
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from Model.database import DatabaseHandler
+# ----------------------------
 
 class SentimentBarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -27,6 +36,9 @@ class SentimentBarChart(FigureCanvasQTAgg):
             scores.setdefault(company, []).append(sentiment_value)
 
         # Moyenne réelle du sentiment
+        if not scores:
+            return
+
         avg_scores = {k: sum(v) / len(v) for k, v in scores.items()}
 
         self.ax.clear()
@@ -68,13 +80,23 @@ class ChartWindow(QtWidgets.QDialog):
 
 
 class NewsViewer(QtWidgets.QWidget):
-    def __init__(self, json_file):
+    def __init__(self):
         super().__init__()
-        self.setWindowTitle("News Viewer")
+        self.setWindowTitle("News Viewer (SQL Edition)")
         self.resize(1000, 600)
 
-        with open(json_file, "r", encoding="utf-8") as f:
-            self.data = json.load(f)
+        # =======================================================
+        # CONNEXION À LA BASE DE DONNÉES (REMPLACE LE JSON)
+        # =======================================================
+        try:
+            db = DatabaseHandler()
+            self.data = db.fetch_all_articles()
+            db.close()
+            print(f"Chargé {len(self.data)} articles depuis la base de données.")
+        except Exception as e:
+            print(f"Erreur de connexion BDD : {e}")
+            self.data = []
+        # =======================================================
 
         self.summary = QtWidgets.QTextEdit()
         self.summary.setReadOnly(True)
@@ -83,8 +105,11 @@ class NewsViewer(QtWidgets.QWidget):
 
         self.company_filter = QtWidgets.QComboBox()
         self.company_filter.addItem("Toutes les entreprises")
-        companies = sorted(set(item["company"] for item in self.data))
-        self.company_filter.addItems(companies)
+        
+        # On récupère la liste unique des entreprises
+        if self.data:
+            companies = sorted(set(item["company"] for item in self.data))
+            self.company_filter.addItems(companies)
 
         self.search_box = QtWidgets.QLineEdit()
         self.search_box.setPlaceholderText(" Rechercher dans les titres ou résumés...")
@@ -157,10 +182,12 @@ class NewsViewer(QtWidgets.QWidget):
             self.table.setItem(row, 2, QtWidgets.QTableWidgetItem(item.get("publisher", "")))
             self.table.setItem(row, 3, QtWidgets.QTableWidgetItem(item.get("time", "")))
 
-            sentiment_text = f"{item['sentiment_label'].capitalize()} ({item['sentiment_score']:.2f})"
+            # Gestion des scores qui pourraient être None
+            score = item.get('sentiment_score', 0.0)
+            sentiment_text = f"{item['sentiment_label'].capitalize()} ({score:.2f})"
             sentiment_item = QtWidgets.QTableWidgetItem(sentiment_text)
 
-            label = item['sentiment_label'].lower()
+            label = item.get('sentiment_label', 'neutre').lower()
             if label == "positif":
                 sentiment_item.setBackground(QtCore.Qt.GlobalColor.green)
             elif label == "négatif":
@@ -176,9 +203,11 @@ class NewsViewer(QtWidgets.QWidget):
             return
 
         item = self.filtered_data[selected]
+        score = item.get('sentiment_score', 0.0)
+        
         text = (f"{item['title']}\n\n{item['summary']}\n\n"
                 f"Sentiment : {item['sentiment_label'].capitalize()} "
-                f"(score = {item['sentiment_score']:.2f})\n\n"
+                f"(score = {score:.2f})\n\n"
                 f"Source : {item['publisher']}\nDate : {item['time']}")
         self.summary.setText(text)
 
@@ -216,7 +245,7 @@ class NewsViewer(QtWidgets.QWidget):
 
     def open_chart_window(self):
         """Ouvre la fenêtre contenant le diagramme à barres."""
-        if not hasattr(self, "filtered_data"):
+        if not hasattr(self, "filtered_data") or not self.filtered_data:
             return
 
         chart_win = ChartWindow(self.filtered_data, self)
@@ -225,6 +254,7 @@ class NewsViewer(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    viewer = NewsViewer("Outputs/articles_with_sentiment.json")
+    # Plus besoin de passer le fichier JSON en argument
+    viewer = NewsViewer()
     viewer.show()
     sys.exit(app.exec())

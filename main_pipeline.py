@@ -5,39 +5,46 @@ import subprocess
 import sys
 from datetime import datetime
 
-# ================= CONFIGURATION =================
+# ================= CONFIGURATION DYNAMIQUE =================
 
-# 1. Chemins des dossiers 
-SCRAPY_PROJECT_PATH = "/Users/baptistetrt/Desktop/Études/Ponts/TDLOG/Model/yahoo_scraper"
-CONTROLLER_FOLDER_PATH   = "/Users/baptistetrt/Desktop/Études/Ponts/TDLOG/Controller" 
+# 1. Détection automatique des chemins (Universel Mac/Windows)
+# On récupère le dossier où se trouve ce fichier (la racine du projet)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# On construit les chemins vers les modules
+SCRAPY_PROJECT_PATH = os.path.join(BASE_DIR, "Model", "yahoo_scraper")
+CONTROLLER_FOLDER_PATH = os.path.join(BASE_DIR, "Controller")
 
 # 2. Configuration des fichiers de sortie
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
-OUTPUT_DIR = os.path.join(BASE_DIR, "Outputs")
+# On utilise le dossier 'outputs' comme défini dans ton nettoyage
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 
 # Fichiers
-FILE_RAW_GLOBAL = os.path.join(OUTPUT_DIR, "global_news.json")        # Entrée 
-FILE_FINAL_SENTIMENT = os.path.join(OUTPUT_DIR, "articles_with_sentiment.json") # Sortie
+FILE_RAW_GLOBAL = os.path.join(OUTPUT_DIR, "global_news.json")          # Historique complet
+FILE_FINAL_SENTIMENT = os.path.join(OUTPUT_DIR, "articles_with_sentiment.json") # Résultat analysé
 
 PATH_SCRAPY_SPIDER = "yahoo_news"
 UNIQUE_KEY = "link"
 
-# ================= IMPORTATION =================
+# ================= IMPORTATION SÉCURISÉE =================
+# On ajoute le dossier Controller au chemin de recherche Python
 sys.path.append(CONTROLLER_FOLDER_PATH)
 
 try:
+    # Maintenant Python peut trouver sentiment.py
     from sentiment import SentimentAnalyzer
-    print("Module 'sentiment' importé avec succès.")
+    print("✅ Module 'sentiment' importé avec succès.")
 except ImportError as e:
     print(f"ERREUR CRITIQUE : Impossible d'importer sentiment.py : {e}")
-    print(f"Vérifie que sentiment.py est bien dans : {CONTROLLER_FOLDER_PATH}")
+    print(f"Le chemin calculé était : {CONTROLLER_FOLDER_PATH}")
     sys.exit(1)
 # ===========================================================
 
+# Création du dossier outputs s'il n'existe pas
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def run_pipeline():
-    # Initialisation de l'analyseur
+    # Initialisation de l'analyseur (charge FinBERT une seule fois)
     analyzer = SentimentAnalyzer()
 
     # Vérif Scrapy
@@ -57,6 +64,7 @@ def run_pipeline():
         # --- ÉTAPE 1 : SCRAPING ---
         print("1. [En cours] Scraping Yahoo Finance...")
         try:
+            # On lance la commande scrapy depuis le bon dossier
             subprocess.run(
                 ["scrapy", "crawl", PATH_SCRAPY_SPIDER, "-O", temp_file],
                 cwd=SCRAPY_PROJECT_PATH, 
@@ -97,7 +105,7 @@ def run_pipeline():
                 clean_link = link.split('?')[0].strip().rstrip('/')
                 articles_dict[clean_link] = item
 
-        # 2. Ajout des nouveaux artiles
+        # 2. Ajout des nouveaux articles
         for article in new_data:
             link = article.get(UNIQUE_KEY)
             if link:
@@ -107,19 +115,17 @@ def run_pipeline():
                     articles_dict[clean_link] = article
                     new_items_count += 1
                 else:
-                    pass
+                    pass # Déjà existant
 
         # 3. Reconversion du dictionnaire en liste pour le JSON final
         all_data = list(articles_dict.values())
         
-        # --- FIN CORRECTION ---
-
         # Sauvegarde du RAW global
         if new_items_count > 0 or not os.path.exists(FILE_RAW_GLOBAL):
             with open(FILE_RAW_GLOBAL, 'w', encoding='utf-8') as f:
                 json.dump(all_data, f, indent=4, ensure_ascii=False)
         
-        # Nettoyage
+        # Nettoyage du fichier temporaire
         if os.path.exists(temp_file): os.remove(temp_file)
         
         print(f"   -> {new_items_count} nouveaux articles ajoutés.")
@@ -128,23 +134,24 @@ def run_pipeline():
         print("3. [En cours] Exécution de SentimentAnalyzer...")
         
         try:
-            # A. Analyse fichier par fichier 
+            # A. Analyse du fichier global vers le fichier final
             articles = analyzer.analyze_json_file(FILE_RAW_GLOBAL, FILE_FINAL_SENTIMENT)
             
-            # B. Agrégation
+            # B. Agrégation pour affichage console
             company_scores = analyzer.aggregate_sentiment_by_company(articles)
 
-            print(" Analyse terminée. Scores actuels :")
+            print("   Analyse terminée. Scores actuels :")
             for company, score in company_scores.items():
                 print(f"   - {company} : {score:.3f}")
             
             print(f"   -> Fichier mis à jour : {FILE_FINAL_SENTIMENT}")
 
         except Exception as e:
-            print(f" Erreur dans l'analyseur de sentiment : {e}")
+            print(f"   Erreur dans l'analyseur de sentiment : {e}")
 
         # --- ÉTAPE 4 : ATTENTE ---
         elapsed = (datetime.now() - start_time).total_seconds()
+        # On attend 1 heure (3600 secondes) moins le temps de traitement
         sleep_time = max(0, 3600 - elapsed)
         print(f"=== CYCLE TERMINÉ. Pause de {int(sleep_time/60)} minutes... ===\n")
         time.sleep(sleep_time)

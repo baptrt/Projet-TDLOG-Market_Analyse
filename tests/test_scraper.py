@@ -5,17 +5,25 @@ import json
 class TestScrapingResult(unittest.TestCase):
     """
     Ce test vérifie automatiquement la qualité des données récupérées par le Scraper.
-    Il simule un "audit" du fichier news.json.
+    Il simule un "audit" du fichier news.json situé dans le dossier outputs.
     """
 
     def setUp(self):
-        # Cette fonction s'exécute avant chaque test.
-        self.filename = "news.json"
+        # --- CORRECTION DU CHEMIN ---
+        # 1. On trouve où est ce fichier de test (dans le dossier 'tests')
+        current_test_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # 2. On remonte d'un étage pour trouver la racine du projet
+        root_dir = os.path.dirname(current_test_dir)
+        
+        # 3. On vise le fichier dans le dossier 'outputs'
+        self.filename = os.path.join(root_dir, "outputs", "news.json")
 
     def test_1_existence_fichier(self):
         """Le fichier de sortie existe-t-il ?"""
         existe = os.path.exists(self.filename)
-        self.assertTrue(existe, f"ERREUR CRITIQUE : Le fichier {self.filename} est introuvable. Le scraper a-t-il tourné ?")
+        # On affiche le chemin cherché en cas d'erreur pour aider au debug
+        self.assertTrue(existe, f"ERREUR CRITIQUE : Le fichier est introuvable ici : {self.filename}. Le scraper a-t-il tourné ?")
 
     def test_2_donnees_non_vides(self):
         """Le fichier contient-il bien des articles ?"""
@@ -58,14 +66,19 @@ class TestScrapingResult(unittest.TestCase):
 
     def test_4_format_date(self):
         """La date est-elle présente ? (Important pour la prévision J+1)"""
+        if not os.path.exists(self.filename):
+            self.skipTest("Fichier absent")
+
         with open(self.filename, 'r', encoding='utf-8', errors='ignore') as f:
             data = json.load(f)
         
-        article = data[0]
-        self.assertIn("time", article)
-        # On ne force pas le test sur le contenu exact de la date car elle peut être None selon Yahoo
-        if article["time"] is None:
-            print("\n[WARN] Attention : Certaines dates n'ont pas pu être récupérées (Yahoo API).")
+        # On teste le premier article s'il existe
+        if len(data) > 0:
+            article = data[0]
+            self.assertIn("time", article)
+            # On ne force pas le test sur le contenu exact de la date car elle peut être None selon Yahoo
+            if article["time"] is None:
+                print("\n[WARN] Attention : Certaines dates n'ont pas pu être récupérées (Yahoo API).")
 
 if __name__ == '__main__':
     print("DEMARRAGE DES TESTS DU SCRAPER...")
