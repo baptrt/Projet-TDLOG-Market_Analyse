@@ -17,7 +17,7 @@ def main():
     articles = analyzer.analyze_json_file("outputs/news.json", "outputs/articles_with_sentiment.json")
 
     # 2. SAUVEGARDE EN BASE DE DONNÉES (SQL)
-    print("💾 Sauvegarde dans la base de données SQL...")
+    print(" Sauvegarde dans la base de données SQL...")
     db = DatabaseHandler()
     
     count = 0
@@ -26,7 +26,7 @@ def main():
         count += 1
     
     db.close()
-    print(f"✅ {count} articles traités et synchronisés en base de données.")
+    print(f" {count} articles traités et synchronisés en base de données.")
 
     # 3. Affichage console des scores
     company_scores = analyzer.aggregate_sentiment_by_company(articles)

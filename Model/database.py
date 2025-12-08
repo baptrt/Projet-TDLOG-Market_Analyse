@@ -64,7 +64,7 @@ class DatabaseHandler:
             ))
             self.conn.commit()
         except sqlite3.Error as e:
-            print(f"❌ Erreur SQL : {e}")
+            print(f" Erreur SQL : {e}")
 
     def fetch_all_articles(self):
         """Récupère tout pour l'interface graphique."""
