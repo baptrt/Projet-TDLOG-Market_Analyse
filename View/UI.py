@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-import datetime
+from datetime import datetime
 from PyQt6 import QtWidgets, QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
