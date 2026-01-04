@@ -161,7 +161,7 @@ def run_pipeline():
 
         # --- ÉTAPE 5 : ATTENTE ---
         elapsed = (datetime.now() - start_time).total_seconds()
-        sleep_time = max(0, 60 - elapsed) # 1 min
+        sleep_time = max(0, 3600 - elapsed) # 1 h
         print(f"=== CYCLE TERMINÉ. Pause de {int(sleep_time/60)} minutes... ===\n")
         time.sleep(sleep_time)
 
