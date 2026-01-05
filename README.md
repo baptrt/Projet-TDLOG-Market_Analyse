@@ -3,15 +3,29 @@
 ## Structure du projet 
 
 ```sh
-└── Projet-TDLOG-Market_Analyse/
-    ├── Controller
-    │   ├── main.py
-    │   └── sentiment.py
-    ├── Model
-    │   └── yahoo_scraper
-    ├── README.md
-    └── View
-        └── UI.py
+PROJET-TDLOG/
+│
+├── run.py                  #  POINT D'ENTRÉE UNIQUE (Lance tout)
+│
+├── Controller/             #  Cerveau
+│   ├── main.py             # Orchestrateur de l'analyse
+│   └── sentiment.py        # Moteur IA (FinBERT) et calculs
+│
+├── Model/                  #  Données
+│   ├── database.py         # Gestionnaire Base de Données (SQLite)
+│   └── yahoo_scraper/      # Robot Scrapy + yfinance
+│
+├── View/                   #  Interface
+│   └── UI.py               # Application de bureau (PyQt6 + Matplotlib)
+│
+├── outputs/                #  Stockage (Généré automatiquement)
+│   ├── market_sentiment.db # Base de données SQL finale
+│   ├── news.json           # Données brutes (Scraping)
+│   └── articles_...json    # Backup JSON des résultats
+│
+└── tests/                  #  Qualité Logicielle
+    ├── test_aggregation.py # Test unitaire logique (Snapshot)
+    └── test_scraper.py     # Test d'intégration (Audit données)
 ```
 
 ## Utilisation du scraping 
