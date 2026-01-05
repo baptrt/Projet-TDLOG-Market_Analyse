@@ -236,5 +236,39 @@
             "négatif": 0.025740649551153183,
             "neutre": 0.9165123105049133
         }
+    },
+    {
+        "company": "GOOGL",
+        "title": "CNBC Daily Open: Investors had much to cheer in 2025 — but 2026's starting out rocky",
+        "link": "https://www.cnbc.com/2026/01/05/cnbc-daily-open-investors-had-much-to-cheer-in-2025-but-2026s-starting-out-rocky.html",
+        "summary": "In this article \n\t\t\t \n\t\t May this year prove as lucrative as 2025, when the   rallied 16.39% mostly on the back of enthusiasm over artificial intelligence.  Other highlights of last year: Google-paren...",
+        "full_text": "In this article \n\t\t\t \n\t\t May this year prove as lucrative as 2025, when the   rallied 16.39% mostly on the back of enthusiasm over artificial intelligence.  Other highlights of last year: Google-parent   was the   of the Magnificent Seven; Colombia's stock market was the   of the  ;    , outshining its sibling  , which itself had a  . And even though the first week of 2026 isn't yet over, global markets and investors already have to contend with a major geopolitical flare-up: the U.S.' attack on Venezuela.  The situation is still developing, so here's a rundown to bring you up to speed:  The oil question: President Donald Trump said the U.S.' oil companies will   An oil consulting firm said Petróleos de Venezuela, the South American nation's state-owned oil company, still \" .\" And analysts think crude prices   in the near term. The foreign policy front: Analysts think the U.S. strike on Venezuela, despite its apparent display of forceful interference in another country,   to do the same with regard to Taiwan.  And Danish Prime Minister   is taking no chances with Trump. On Sunday, following the attack, she cautioned the U.S. to   against a historically close ally and against another country and another people who have said very clearly that they are not for sale.\" It's a lot to take in for the first Monday of 2026 — for now, we'll have to wait for the U.S. to wake up for updates on their front.  The military operation, which overthrew and , was conducted Saturday stateside. A U.S. federal indictment is charging Maduro with a  . . U.S. Secretary of State Marco Rubio on Sunday   on President Donald Trump's claim that the U.S. will  .  y. On the first trading day of 2026, the S&P 500 rose 0.19%, but   of as much as 0.7%.   on Monday. South Korea's   and Japan's   jumped more than 3% on the back of defense stocks rising. The order concerns HieFo's acquisition of New Jersey-based Emcore's digital chips and related wafer design, fabrication, and processing businesses in April 2024. It's another intensification of the  The year kicks off with the U.S. nonfarm payrolls report for December, out Friday, which will provide market watchers the first sign of  . Elon Musk's SpaceX is reportedly looking at a value of around $1.5 trillion when it hits the public market. That would surpass the prior record set by the   in 2019. Musk said late last month that reports of the space technology company's plans to go public this year were \"accurate.\" Multiple outlets reported that the IPO was in the works following a share sale valuing the firm at around $800 billion.",
+        "publisher": "CNBC",
+        "time": "2026-01-05T07:30:01+0000",
+        "uuid": "https://www.cnbc.com/2026/01/05/cnbc-daily-open-investors-had-much-to-cheer-in-2025-but-2026s-starting-out-rocky.html_GOOGL",
+        "sentiment_label": "positif",
+        "sentiment_score": 0.6616360545158386,
+        "sentiment_probas": {
+            "positif": 0.6616360545158386,
+            "négatif": 0.23708248138427734,
+            "neutre": 0.10128146409988403
+        }
+    },
+    {
+        "company": "GOOGL",
+        "title": "CNBC Daily Open: A banner year for markets in 2025",
+        "link": "https://www.cnbc.com/2026/01/05/cnbc-daily-open-a-banner-year-for-markets-in-2025.html",
+        "summary": "In this article \n\t\t\t \n\t\t May this year prove as lucrative as 2025, when the   rallied 16.39% mostly on the back of enthusiasm over artificial intelligence, though some pockets of the sector (looking a...",
+        "full_text": "In this article \n\t\t\t \n\t\t May this year prove as lucrative as 2025, when the   rallied 16.39% mostly on the back of enthusiasm over artificial intelligence, though some pockets of the sector (looking at you,  ) noticeably weakened as the year drew to a close. Since U.S. markets have only been open for a day thus far, and most investors and analysts might still be stubbornly nursing their New Year's Day champagne (maybe I'm just speaking for myself), here's a round-up of CNBC's end-of-the-year retrospectives that paint, in broad strokes, what 2025 looked like.  Here's to a fruitful year of trading! The military operation, which overthrew and , was conducted Saturday stateside. A U.S. federal indictment is charging Maduro with a  . . U.S. Secretary of State Marco Rubio on Sunday   on President Donald Trump's claim that the U.S. will  . Analysts think   in the near term. On the first trading day of 2026, the S&P 500 rose 0.19%, but   of as much as 0.7%.The pan-European    . Britain's   broke the 10,000 level during trading, but closed at 9,951.14. The Chinese automaker said Thursday   in 2025, surpassing  . It's a sign of how Chinese EV makers are dominating the market. The year kicks off with the U.S. nonfarm payrolls report for December, out Friday, which will provide market watchers the first sign of  . Elon Musk's SpaceX is reportedly looking at a value of around $1.5 trillion when it hits the public market. That would surpass the prior record set by the   in 2019. Musk said late last month that reports of the space technology company's plans to go public this year were \"accurate.\" Multiple outlets reported that the IPO was in the works following a share sale valuing the firm at around $800 billion.",
+        "publisher": "CNBC",
+        "time": "2026-01-05T01:19:23+0000",
+        "uuid": "https://www.cnbc.com/2026/01/05/cnbc-daily-open-a-banner-year-for-markets-in-2025.html_GOOGL",
+        "sentiment_label": "neutre",
+        "sentiment_score": 0.48774686455726624,
+        "sentiment_probas": {
+            "positif": 0.4260817766189575,
+            "négatif": 0.08617141842842102,
+            "neutre": 0.48774686455726624
+        }
     }
 ]
