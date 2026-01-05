@@ -56,7 +56,6 @@ class FinBERTSentiment:
         return label, confidence, probas_dict
 
 
-
 class SentimentAnalyzer:
     """
     Interface simple pour analyser un article ou un fichier JSON.

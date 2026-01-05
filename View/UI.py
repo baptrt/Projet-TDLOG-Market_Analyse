@@ -1,8 +1,11 @@
 import json
+import os
 import sys
+from datetime import datetime
 from PyQt6 import QtWidgets, QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+import matplotlib.dates as mdates
 
 class SentimentBarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -47,25 +50,114 @@ class SentimentBarChart(FigureCanvasQTAgg):
         self.fig.tight_layout()
         self.draw()
 
+class SentimentEvolutionChart(FigureCanvasQTAgg):
+    """Graphique linéaire pour l'évolution du sentiment dans le temps."""
+    def __init__(self, parent=None):
+        self.fig = Figure(figsize=(8, 5))
+        super().__init__(self.fig)
+        self.ax = self.fig.add_subplot(111)
+
+    def update_chart(self, history_file):
+        # Vérification si le fichier existe
+        if not os.path.exists(history_file):
+            self.ax.clear()
+            self.ax.text(0.5, 0.5, "Pas d'historique disponible", 
+                         ha='center', va='center', transform=self.ax.transAxes)
+            self.draw()
+            return
+
+        # Chargement des données
+        try:
+            with open(history_file, "r", encoding="utf-8") as f:
+                history_data = json.load(f)
+        except Exception as e:
+            print(f"Erreur lecture historique: {e}")
+            return
+
+        if not history_data:
+            return
+
+        # Restructuration des données : { "Apple": [(date, score), ...], ... }
+        company_series = {}
+        
+        for entry in history_data:
+            dt_str = entry["timestamp"]
+            # Conversion string -> datetime (Format: 2026-01-04 17:32:31)
+            try:
+                dt_obj = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                # Fallback si le format diffère légèrement (ex: avec _ au lieu d'espace)
+                try: dt_obj = datetime.strptime(dt_str, "%Y-%m-%d_%H-%M-%S")
+                except: continue
+
+            scores = entry["scores"]
+            
+            for company, score in scores.items():
+                company_series.setdefault(company, []).append((dt_obj, score))
+
+        self.ax.clear()
+
+        # Tracer une ligne par entreprise
+        for company, points in company_series.items():
+            # Trier par date pour être sûr que la ligne est droite
+            points.sort(key=lambda x: x[0])
+            
+            if points:
+                xs = [p[0] for p in points]
+                ys = [p[1] for p in points]
+                self.ax.plot(xs, ys, marker='o', markersize=4, label=company)
+
+        # Mise en forme du graphique
+        self.ax.set_ylim(-1.1, 1.1)
+        self.ax.set_ylabel("Sentiment Moyen")
+        self.ax.set_title("Évolution du Sentiment (Temps Réel)")
+        
+        # Formatage des dates sur l'axe X (Heure:Minute)
+        self.ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+        self.fig.autofmt_xdate() # Rotation des dates pour lisibilité
+
+        self.ax.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize='small')
+        self.ax.grid(True, linestyle='--', alpha=0.6)
+        
+        # Ajustement pour que la légende ne soit pas coupée
+        self.fig.tight_layout()
+        self.draw()
+
 class ChartWindow(QtWidgets.QDialog):
-    """Fenêtre séparée pour afficher le diagramme à barres."""
-    def __init__(self, data, parent=None):
+    """Fenêtre affichant les graphiques (Barres et Courbes) avec des onglets."""
+    def __init__(self, current_data, history_path, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Diagramme des sentiments")
-        self.resize(700, 500)
+        self.setWindowTitle("Analyse des Sentiments")
+        self.resize(900, 600)
 
         layout = QtWidgets.QVBoxLayout(self)
 
-        self.chart = SentimentBarChart()
-        layout.addWidget(self.chart)
+        # Création des onglets
+        tabs = QtWidgets.QTabWidget()
+        
+        # --- Onglet 1 : Vue Globale (Barres) ---
+        self.tab_bar = QtWidgets.QWidget()
+        layout_bar = QtWidgets.QVBoxLayout(self.tab_bar)
+        self.bar_chart = SentimentBarChart()
+        layout_bar.addWidget(self.bar_chart)
+        # Mise à jour du diagramme à barres (données actuelles filtrées)
+        self.bar_chart.update_chart(current_data)
+        tabs.addTab(self.tab_bar, "Moyenne Actuelle")
 
-        # Mettre le graphique à jour
-        self.chart.update_chart(data)
+        # --- Onglet 2 : Tendance (Courbes) ---
+        self.tab_line = QtWidgets.QWidget()
+        layout_line = QtWidgets.QVBoxLayout(self.tab_line)
+        self.line_chart = SentimentEvolutionChart()
+        layout_line.addWidget(self.line_chart)
+        # Mise à jour de la courbe (fichier historique)
+        self.line_chart.update_chart(history_path)
+        tabs.addTab(self.tab_line, "Évolution Temporelle")
+
+        layout.addWidget(tabs)
 
         close_button = QtWidgets.QPushButton("Fermer")
         close_button.clicked.connect(self.close)
         layout.addWidget(close_button)
-
 
 class NewsViewer(QtWidgets.QWidget):
     def __init__(self, json_file):
@@ -215,11 +307,15 @@ class NewsViewer(QtWidgets.QWidget):
         dialog.exec()
 
     def open_chart_window(self):
-        """Ouvre la fenêtre contenant le diagramme à barres."""
+        """Ouvre la fenêtre contenant les diagrammes."""
         if not hasattr(self, "filtered_data"):
             return
 
-        chart_win = ChartWindow(self.filtered_data, self)
+        # Chemin vers ton fichier d'historique (adapte si besoin)
+        history_file = "Outputs/trend_history.json"
+        
+        # On passe maintenant filtered_data ET history_file
+        chart_win = ChartWindow(self.filtered_data, history_file, self)
         chart_win.exec()
 
 
