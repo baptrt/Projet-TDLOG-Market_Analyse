@@ -9,6 +9,7 @@
     │   └── sentiment.py
     ├── Model
     │   └── yahoo_scraper
+    │   └── cnbc_scraper
     ├── README.md
     └── View
         └── UI.py
