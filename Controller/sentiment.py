@@ -69,7 +69,7 @@ class SentimentAnalyzer:
         return self.model.analyze(text)
 
     def analyze_json_file(self, input_json: str, output_json: str = None) -> List[Dict]:
-        with open(input_json, "r") as f:
+        with open(input_json, "r", encoding="utf-8") as f:
             articles = json.load(f)
 
         for article in articles:
@@ -82,7 +82,7 @@ class SentimentAnalyzer:
             article["sentiment_probas"] = probas  
 
         if output_json:
-            with open(output_json, "w") as f:
+            with open(output_json, "w", encoding="utf-8") as f:
                 json.dump(articles, f, indent=4, ensure_ascii=False)
 
         return articles

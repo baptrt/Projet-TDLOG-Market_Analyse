@@ -5,15 +5,15 @@ import subprocess
 import sys
 from datetime import datetime
 
-# ================= CONFIGURATION =================
+# ================= CONFIGURATION DYNAMIQUE =================
 
 # 1. Chemins des dossiers 
 SCRAPY_PROJECT_PATH = "Model/cnbc_scraper"
 CONTROLLER_FOLDER_PATH   = "Controller" 
 
 # 2. Configuration des fichiers de sortie
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
-OUTPUT_DIR = os.path.join(BASE_DIR, "Outputs")
+# On utilise le dossier 'outputs' comme défini dans ton nettoyage
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 
 # Fichiers
 FILE_FINAL_SENTIMENT = os.path.join(OUTPUT_DIR, "articles_with_sentiment.json") # Base de données cumulée
@@ -22,18 +22,21 @@ FILE_TRENDS = os.path.join(OUTPUT_DIR, "trend_history.json") # Historique pour l
 PATH_SCRAPY_SPIDER = "cnbc"  # Nom du spider Scrapy à utiliser
 UNIQUE_KEY = "link"
 
-# ================= IMPORTATION =================
+# ================= IMPORTATION SÉCURISÉE =================
+# On ajoute le dossier Controller au chemin de recherche Python
 sys.path.append(CONTROLLER_FOLDER_PATH)
 
 try:
+    # Maintenant Python peut trouver sentiment.py
     from sentiment import SentimentAnalyzer
     print("Module 'sentiment' importé avec succès.")
 except ImportError as e:
     print(f"ERREUR CRITIQUE : Impossible d'importer sentiment.py : {e}")
-    print(f"Vérifie que sentiment.py est bien dans : {CONTROLLER_FOLDER_PATH}")
+    print(f"Le chemin calculé était : {CONTROLLER_FOLDER_PATH}")
     sys.exit(1)
 # ===========================================================
 
+# Création du dossier outputs s'il n'existe pas
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def run_pipeline():
@@ -65,6 +68,7 @@ def run_pipeline():
         # --- ÉTAPE 1 : SCRAPING (Nouveaux articles seulement) ---
         print("1. [En cours] Scraping Yahoo Finance...")
         try:
+            # On lance la commande scrapy depuis le bon dossier
             subprocess.run(
                 ["scrapy", "crawl", PATH_SCRAPY_SPIDER, "-O", temp_raw_file],
                 cwd=SCRAPY_PROJECT_PATH, 
