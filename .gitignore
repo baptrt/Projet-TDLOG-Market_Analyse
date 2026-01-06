@@ -1,14 +1,10 @@
-# Fichiers compilés Python (inutiles)
+# Fichiers compilés Python 
 __pycache__/
 *.pyc
 
-# Fichiers système Windows/Mac (inutiles)
+# Fichiers système Windows/Mac 
 desktop.ini
 .DS_Store
 
-# Fichiers de configuration VS Code (Optionnel, certains préfèrent les garder)
+# Fichiers de configuration VS Code 
 .vscode/
-
-# Fichiers de données (Optionnel : si tu veux que GitHub reste léger)
-# news.json
-# articles_with_sentiment.json
