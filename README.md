@@ -5,28 +5,60 @@
 ```sh
 PROJET-TDLOG/
 │
-├── run.py                  #  POINT D'ENTRÉE UNIQUE (Lance tout)
+├── run.py                          # Point d'entrée unique
 │
-├── Controller/             #  Cerveau
-│   ├── main.py             # Orchestrateur de l'analyse
-│   └── sentiment.py        # Moteur IA (FinBERT) et calculs
+├── app/                            # COUCHE APPLICATION
+│   ├── __init__.py
+│   └── orchestrator.py             # Orchestre le pipeline complet
 │
-├── Model/                  #  Données
-│   ├── database.py         # Gestionnaire Base de Données (SQLite)
-│   ├── yahoo_scraper/      # Robot Scrapy + yfinance
-│   └── cnbc_scraper/       # Robot Scrapy with HTML 
+├── domain/                         # COUCHE MÉTIER (Business Logic)
+│   ├── __init__.py
+│   ├── entities/                   # Entités métier
+│   │   ├── __init__.py
+│   │   ├── article.py
+│   │   └── sentiment.py
+│   │
+│   └── services/                   # Services métier
+│       ├── __init__.py
+│       ├── sentiment_analyzer.py   # Moteur FinBERT
+│       └── aggregator.py           # Agrégation
 │
-├── View/                   #  Interface
-│   └── UI.py               # Application de bureau (PyQt6 + Matplotlib)
+├── infrastructure/                 # COUCHE DONNÉES
+│   ├── __init__.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── repository.py           # Interface d'accès DB
+│   │   └── models.py               # Schéma SQLite
+│   │
+│   └── datasources/
+│       ├── __init__.py
+│       ├── yahoo_scraper/
+│       └── cnbc_scraper/
 │
-├── outputs/                #  Stockage (Généré automatiquement)
-│   ├── market_sentiment.db # Base de données SQL finale
-│   ├── news.json           # Données brutes (Scraping)
-│   └── articles_...json    # Backup JSON des résultats
+├── mvc/                            # INTERFACE GRAPHIQUE (Pattern MVC)
+│   ├── __init__.py
+│   │
+│   ├── models/                     # MODÈLE MVC
+│   │   ├── __init__.py
+│   │   └── ui_state.py             # État de l'interface (données affichées)
+│   │
+│   ├── views/                      # VUE MVC
+│   │   ├── __init__.py
+│   │   ├── main_window.py          # Fenêtre principale (PyQt6)
+│   │   ├── chart_widget.py         # Widget graphiques (Matplotlib)
+│   │   └── components/             # Composants réutilisables
+│   │       ├── __init__.py
+│   │       ├── ticker_input.py
+│   │       └── results_table.py
+│   │
+│   └── controllers/                # CONTRÔLEUR MVC
+│       ├── __init__.py
+│       └── main_controller.py      # Gestion événements UI
 │
-└── tests/                  #  Qualité Logicielle
-    ├── test_aggregation.py # Test unitaire logique (Snapshot)
-    └── test_scraper.py     # Test d'intégration (Audit données)
+├── outputs/                        # Résultats
+├── tests/                          # Tests
+├── config/                         # Configuration
+└── requirements.txt
 ```
 
 ## Utilisation du scraping 
