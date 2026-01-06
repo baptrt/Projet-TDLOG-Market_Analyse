@@ -1,0 +1,37 @@
+# ========================================
+# PROJET-TDLOG : Market Sentiment Analyzer
+# ========================================
+
+# Web Scraping
+scrapy>=2.11.0
+scrapy-playwright>=0.0.34  # Si besoin de scraping JavaScript
+yfinance>=0.2.36
+
+# Machine Learning & NLP
+transformers>=4.36.0
+torch>=2.1.0
+sentencepiece>=0.1.99  # Tokenizer pour certains modèles
+
+# Interface Graphique
+PyQt6>=6.6.0
+matplotlib>=3.8.0
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.24.0
+
+# Database (SQLite inclus dans Python standard library)
+# Pas besoin de dépendance externe
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Utilities
+python-dateutil>=2.8.2
+requests>=2.31.0
+
+# Development (optionnel)
+black>=23.0.0  # Formatage de code
+flake8>=6.1.0  # Linting
+ipython>=8.18.0  # Console interactive améliorée
