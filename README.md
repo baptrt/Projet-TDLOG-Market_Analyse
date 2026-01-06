@@ -99,7 +99,7 @@ python run.py
 ```
 
 **Cela démarre simultanément :**
-1. Le **pipeline de scraping** en arrière-plan (cycle toutes les heures)
+1. Le **pipeline de scraping** en arrière-plan
 2. L'**interface graphique** dans la fenêtre principale
 
 ### Ce qui se passe automatiquement :
@@ -117,9 +117,7 @@ L'interface permet de :
 - **Filtrer** les articles par entreprise, sentiment, recherche textuelle
 - **Consulter** le détail de chaque article
 - **Visualiser** les graphiques de sentiment
-- **Rafraîchir** pour voir les nouveaux articles scrapés
-
-**Bouton "Rafraîchir" :** Recharge les articles depuis la base sans redémarrer l'application.
+- **Rafraîchir** pour relancer un scraping
 
 ## Visualiser l'archive des articles scrapés
 
