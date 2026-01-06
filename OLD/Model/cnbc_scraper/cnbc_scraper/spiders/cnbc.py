@@ -17,7 +17,7 @@ class CnbcSpider(scrapy.Spider):
     def start_requests(self):
         for ticker in self.tickers:
             # On cible l'onglet News spécifique
-            url = f"https://www.cnbc.com/quotes/{ticker}?tab=news"
+            url = f"https://www.cnbc.com/quotes/{ticker}?tab=investing"
             yield scrapy.Request(url=url, callback=self.parse_list, meta={'ticker': ticker, 'article_count': 0})
 
     def parse_list(self, response):
