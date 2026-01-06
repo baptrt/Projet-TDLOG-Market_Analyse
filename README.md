@@ -13,7 +13,8 @@ PROJET-TDLOG/
 │
 ├── Model/                  #  Données
 │   ├── database.py         # Gestionnaire Base de Données (SQLite)
-│   └── yahoo_scraper/      # Robot Scrapy + yfinance
+│   ├── yahoo_scraper/      # Robot Scrapy + yfinance
+│   └── cnbc_scraper/       # Robot Scrapy with HTML 
 │
 ├── View/                   #  Interface
 │   └── UI.py               # Application de bureau (PyQt6 + Matplotlib)
