@@ -87,7 +87,7 @@ python run.py
 ```
 
 **Cela démarre simultanément :**
-1. Le **pipeline de scraping** en arrière-plan (cycle toutes les heures)
+1. Le **pipeline de scraping** en arrière-plan 
 2. L'**interface graphique** dans la fenêtre principale
 
 ### Ce qui se passe automatiquement :
@@ -107,24 +107,24 @@ L'interface permet de :
 - **Visualiser** les graphiques de sentiment
 - **Rafraîchir** pour voir les nouveaux articles scrapés
 
-**Bouton "Rafraîchir" :** Recharge les articles depuis la base sans redémarrer l'application.
-
-## Visualiser l'archive des articles scrapés
-
-### Affichage dans le terminal
-
-```bash
-python scripts/view_scraped_archive.py
-```
+**Bouton "Rafraîchir" :** Lance un nouveau scraping et charge les nouveaux articles depuis la base sans redémarrer l'application.
 
 ### Changer de spider
 
-Dans `run.py`, ligne 33-34 :
+Dans `mvc/controllers/main_controller.py`,  :
 
 ```python
 runner = ContinuousPipelineRunner(
     scrapy_project_path="infrastructure/datasources/cnbc_scraper",
-    spider_name="cnbc",  # Nom du spider à utiliser
+    spider_name="cnbc",  
+)
+```
+ou : 
+
+```python
+runner = ContinuousPipelineRunner(
+    scrapy_project_path="infrastructure/datasources/yahoo_scraper",
+    spider_name="yahoo_scraper",  
 )
 ```
 
