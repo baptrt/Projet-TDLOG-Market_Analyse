@@ -17,51 +17,39 @@ PROJET-TDLOG/
 ├── run.py                          # POINT D'ENTRÉE UNIQUE
 │
 ├── app/                            # COUCHE APPLICATION
-│   ├── __init__.py
 │   ├── orchestrator.py             # Orchestre le pipeline complet
 │   └── pipeline_runner.py          # Pipeline continu (scraping + analyse)
 │
 ├── domain/                         # COUCHE MÉTIER 
-│   ├── __init__.py
 │   ├── entities/                   # Entités métier
-│   │   ├── __init__.py
 │   │   ├── article.py
 │   │   └── sentiment.py
 │   │
 │   └── services/                   # Services métier
-│       ├── __init__.py
 │       ├── sentiment_analyzer.py   # Moteur FinBERT
 │       └── aggregator.py           # Agrégation
 │
 ├── infrastructure/                 # COUCHE DONNÉES
-│   ├── __init__.py
 │   ├── database/
-│   │   ├── __init__.py
 │   │   ├── repository.py           # Interface d'accès DB
 │   │   └── models.py               # Schéma SQLite
 │   │
 │   └── datasources/
-│       ├── __init__.py
 │       ├── yahoo_scraper/
 │       └── cnbc_scraper/           # Spider Scrapy actif
 │
 ├── mvc/                            # INTERFACE GRAPHIQUE (Pattern MVC)
-│   ├── __init__.py
 │   │
 │   ├── models/                     # MODÈLE MVC
-│   │   ├── __init__.py
 │   │   └── ui_state.py             # État de l'interface (données affichées)
 │   │
 │   ├── views/                      # VUE MVC
-│   │   ├── __init__.py
 │   │   ├── main_window.py          # Fenêtre principale (PyQt6)
 │   │   └── components/             # Composants réutilisables
-│   │       ├── __init__.py
 │   │       ├── sentiment_bar_chart.py
 │   │       └── sentiment_evolution_chart.py
 │   │
 │   └── controllers/                # CONTRÔLEUR MVC
-│       ├── __init__.py
 │       └── main_controller.py      # Gestion événements UI
 │
 ├── outputs/                        # RÉSULTATS
