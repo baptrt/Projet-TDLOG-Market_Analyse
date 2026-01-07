@@ -22,7 +22,7 @@ class ContinuousPipelineRunner:
     3. Sauvegarde DB
     4. Mise à jour historique
     
-    Architecture Pipeline (Section 4 du cours).
+    Architecture Pipeline.
     """
     
     def __init__(

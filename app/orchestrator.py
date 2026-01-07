@@ -13,7 +13,7 @@ class MarketSentimentOrchestrator:
     """
     Orchestrateur de l'analyse de sentiment de marché.
     
-    Architecture Pipeline (Section 4 du cours) :
+    Architecture Pipeline :
     1. Chargement des données → 2. Analyse sentiment → 3. Agrégation → 4. Sauvegarde
     
     Cette classe coordonne les différents services sans contenir de logique métier.
