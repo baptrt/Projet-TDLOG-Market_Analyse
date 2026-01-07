@@ -111,12 +111,13 @@ L'interface permet de :
 
 ### Changer de spider
 
-Dans `mvc/controllers/main_controller.py`,  :
+Dans `mvc/controllers/main_controller.py`, lignes 19-23  :
 
 ```python
 runner = ContinuousPipelineRunner(
     scrapy_project_path="infrastructure/datasources/cnbc_scraper",
-    spider_name="cnbc",  
+    spider_name="cnbc",
+    output_dir="outputs"
 )
 ```
 ou : 
@@ -124,7 +125,8 @@ ou :
 ```python
 runner = ContinuousPipelineRunner(
     scrapy_project_path="infrastructure/datasources/yahoo_scraper",
-    spider_name="yahoo_scraper",  
+    spider_name="yahoo_scraper",
+    output_dir="outputs"
 )
 ```
 
