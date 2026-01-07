@@ -60,14 +60,14 @@ class YahooNewsSpider(scrapy.Spider):
         Structure 2025: les données sont dans item['content']
         """
         try:
-            # IMPORTANT: Les données sont dans item['content']
+            # Les données sont dans item['content']
             content = item.get("content", {})
             
             if not content:
                 self.logger.warning(f"Article sans contenu pour {ticker}")
                 return None
             
-            # === EXTRACTION DES CHAMPS ===
+            # EXTRACTION DES CHAMPS 
             
             # Titre
             title = content.get("title", "")
@@ -122,9 +122,7 @@ class YahooNewsSpider(scrapy.Spider):
                 "summary": summary,
                 "time": pub_time,
                 "full_text": summary,  # Résumé comme texte complet
-                "image_url": image_url,
                 "uuid": uuid,
-                "related_tickers": [],  # Pas disponible dans la nouvelle structure
             }
             
             return article

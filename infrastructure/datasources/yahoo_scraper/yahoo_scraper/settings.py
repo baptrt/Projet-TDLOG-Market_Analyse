@@ -4,16 +4,20 @@ BOT_NAME = "yahoo_scraper"
 SPIDER_MODULES = ["yahoo_scraper.spiders"]
 NEWSPIDER_MODULE = "yahoo_scraper.spiders"
 
-# --- 1. RESSEMBLER À UN HUMAIN ---
-# Utilisation d'un User-Agent récent et standard
+#  Paramètres de base 
+LOG_LEVEL = "INFO"
+FEED_EXPORT_ENCODING = "utf-8"
+ROBOTSTXT_OBEY = False
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 
-# --- 2. GESTION DES COOKIES (CRUCIAL POUR YAHOO) ---
-COOKIES_ENABLED = True
-COOKIES_DEBUG = False  # Mettre à False pour éviter de polluer les logs, sauf si ça plante
+# Vitesse de scraping
+DOWNLOAD_DELAY = 1.5
+RANDOMIZE_DOWNLOAD_DELAY = True
+CONCURRENT_REQUESTS = 4
+CONCURRENT_REQUESTS_PER_DOMAIN = 2
 
-# Votre chaîne de cookies extraite (Formatée pour éviter les erreurs de syntaxe)
-# Note : Si le scraping échoue dans quelques jours, c'est que ce cookie a expiré.
+# Cookies (Obligatoire pour Yahoo)
+COOKIES_ENABLED = True
 YAHOO_COOKIES = (
     '__eoi=ID=03f5c7e1c52913ed:T=1764600785:RT=1764600785:S=AA-AfjagUxvN1O87lFCVVM8xdHRY; '
     '__gpi=UID=00001316aabad954:T=1764600785:RT=1764600785:S=ALNI_MYbghjgyhaAx00OwMdT3OWhtPzcqg; '
@@ -36,27 +40,12 @@ YAHOO_COOKIES = (
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
     'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-    'User-Agent': USER_AGENT,
-    'Cookie': YAHOO_COOKIES, # Injection du cookie ici
+    'Cookie': YAHOO_COOKIES,
     'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache',
 }
 
-# --- 3. COMPORTEMENT DU ROBOT ---
-ROBOTSTXT_OBEY = False # Indispensable pour Yahoo Finance
-
-DOWNLOAD_DELAY = 1.5 # Augmenté légèrement pour être plus sûr
-RANDOMIZE_DOWNLOAD_DELAY = True # Ajoute une variation aléatoire (entre 0.75s et 2.25s)
-
-CONCURRENT_REQUESTS = 4
-CONCURRENT_REQUESTS_PER_DOMAIN = 2 # On ralentit spécifiquement sur le domaine pour éviter le ban
-
-# --- 4. CONFIGURATION TECHNIQUE ---
+# Technique 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEED_EXPORT_ENCODING = "utf-8"
-LOG_LEVEL = "INFO"
-
-# Gestion des redirections (Yahoo aime utiliser Meta Refresh pour bloquer)
 REDIRECT_ENABLED = True
 METAREFRESH_ENABLED = True

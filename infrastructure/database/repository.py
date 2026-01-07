@@ -18,10 +18,7 @@ class DatabaseRepository:
         os.makedirs(output_dir, exist_ok=True)
         self.db_path = os.path.join(output_dir, db_name)
         
-        # --- DEBUG : AFFICHE LE CHEMIN EXACT ---
-        print(f"[DB INFO] Chemin de la BDD : {self.db_path}")
-        
-        # 2. Initialisation immédiate de la table
+        # Initialisation immédiate de la table
         self._create_tables()
     
     def _get_connection(self):
@@ -112,7 +109,6 @@ class DatabaseRepository:
             print(f"Erreur SQL fetch_all : {e}")
             return []
     
-    # ... (Gardez fetch_articles_by_company et _row_to_dict comme avant) ...
     def fetch_articles_by_company(self, company: str) -> List[Dict]:
         try:
             with self._get_connection() as conn:

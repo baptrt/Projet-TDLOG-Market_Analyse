@@ -116,7 +116,7 @@ class MainController(QObject):
         Lance le scraping dans un thread séparé.
         """
         print("[Controller] Démarrage du processus de rafraîchissement...")
-        self.view.show_loading("Recherche de nouveaux articles (CNBC)...")
+        self.view.show_loading("Recherche de nouveaux articles ...")
         
         # 1. Création du Thread et du Worker
         self.thread = QThread()
