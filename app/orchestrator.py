@@ -45,14 +45,12 @@ class MarketSentimentOrchestrator:
         Returns:
             Dictionnaire {company: score_moyen}
         """
-        print("\n" + "="*60)
         print("Démarrage du pipeline d'analyse de sentiment")
-        print("="*60 + "\n")
         
         # ÉTAPE 1 : Chargement des données
         print("[1/4] Chargement des articles...")
         articles = self._load_articles_from_json(input_json_path)
-        print(f"  ✓ {len(articles)} articles chargés\n")
+        print(f" {len(articles)} articles chargés\n")
         
         # ÉTAPE 2 : Analyse de sentiment
         print("[2/4] Analyse de sentiment (FinBERT)...")
@@ -62,17 +60,15 @@ class MarketSentimentOrchestrator:
         # ÉTAPE 3 : Agrégation par entreprise
         print("[3/4] Agrégation des sentiments par entreprise...")
         company_scores = self.aggregator.aggregate_by_company(analyzed_articles)
-        print(f"  ✓ {len(company_scores)} entreprises analysées\n")
+        print(f" {len(company_scores)} entreprises analysées\n")
         
         # ÉTAPE 4 : Sauvegarde
         if output_json_path:
             print("[4/4] Sauvegarde des résultats...")
             self._save_results(analyzed_articles, output_json_path)
-            print(f"  ✓ Résultats sauvegardés : {output_json_path}\n")
-        
-        print("="*60)
+            print(f" Résultats sauvegardés : {output_json_path}\n")
+
         print("Pipeline terminé avec succès")
-        print("="*60 + "\n")
         
         return company_scores
     

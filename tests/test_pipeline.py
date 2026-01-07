@@ -1,8 +1,6 @@
 # tests/integration/test_pipeline.py
 
 import unittest
-import json
-import os
 from pathlib import Path
 
 from app.orchestrator import MarketSentimentOrchestrator

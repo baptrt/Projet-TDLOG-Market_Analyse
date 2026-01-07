@@ -1,7 +1,6 @@
 # run.py - Point d'entrée unique du projet
 
 import sys
-import threading
 from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
@@ -11,24 +10,6 @@ from mvc.views.main_window import MainWindow
 from mvc.controllers.main_controller import MainController
 from infrastructure.database.repository import DatabaseRepository
 from app.pipeline_runner import ContinuousPipelineRunner
-
-
-def start_background_scraping():
-    """
-    Lance le pipeline de scraping dans un thread séparé.
-    Tourne en arrière-plan pendant que l'interface graphique fonctionne.
-    """
-    print("\n[BACKGROUND] Démarrage du pipeline de scraping...")
-    
-    runner = ContinuousPipelineRunner(
-        scrapy_project_path="infrastructure/datasources/cnbc_scraper",
-        spider_name="cnbc",
-        output_dir="outputs",
-        cycle_interval_seconds=3600  # 1 heure
-    )
-    
-    # Lance la boucle infinie du pipeline
-    runner.run_continuous()
 
 
 def start_gui():

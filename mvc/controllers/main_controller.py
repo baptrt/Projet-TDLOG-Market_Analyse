@@ -17,8 +17,8 @@ class ScrapingWorker(QObject):
     def run(self):
         # Configuration du runner pour un tir unique
         runner = ContinuousPipelineRunner(
-            scrapy_project_path="infrastructure/datasources/cnbc_scraper",
-            spider_name="cnbc",
+            scrapy_project_path="infrastructure/datasources/yahoo_scraper",
+            spider_name="yahoo_scraper",
             output_dir="outputs"
         )
         # Lancement du scraping (prend du temps)
@@ -116,7 +116,7 @@ class MainController(QObject):
         Lance le scraping dans un thread séparé.
         """
         print("[Controller] Démarrage du processus de rafraîchissement...")
-        self.view.show_loading("Recherche de nouveaux articles (CNBC)...")
+        self.view.show_loading("Recherche de nouveaux articles ...")
         
         # 1. Création du Thread et du Worker
         self.thread = QThread()

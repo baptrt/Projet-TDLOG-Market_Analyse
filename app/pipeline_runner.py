@@ -1,7 +1,5 @@
 # app/pipeline_runner.py
 
-import os
-import time
 import json
 import subprocess
 from datetime import datetime
@@ -27,17 +25,15 @@ class ContinuousPipelineRunner:
     
     def __init__(
         self,
-        scrapy_project_path: str = "infrastructure/datasources/cnbc_scraper",
-        spider_name: str = "cnbc",
+        scrapy_project_path: str = "infrastructure/datasources/yahoo_scraper",
+        spider_name: str = "yahoo_scraper",
         output_dir: str = "outputs",
-        cycle_interval_seconds: int = 3600  # 1 heure
     ):
         # Résolution des chemins absolus depuis la racine du projet
         self.project_root = Path(__file__).parent.parent.resolve()
         self.scrapy_project_path = (self.project_root / scrapy_project_path).resolve()
         self.spider_name = spider_name
         self.output_dir = (self.project_root / output_dir).resolve()
-        self.cycle_interval = cycle_interval_seconds
         
         # Vérification que le dossier Scrapy existe
         if not self.scrapy_project_path.exists():
@@ -88,7 +84,7 @@ class ContinuousPipelineRunner:
                 temp_raw_file.unlink()
             return
         
-        print(f"   ✓ {len(new_articles_raw)} articles récupérés")
+        print(f" {len(new_articles_raw)} articles récupérés")
         
         # Sauvegarde des articles bruts dans l'archive JSON
         self._save_scraped_articles_to_archive(new_articles_raw, scraped_archive, timestamp)
@@ -96,17 +92,17 @@ class ContinuousPipelineRunner:
         # ÉTAPE 2 : ANALYSE SENTIMENT
         print("\n[2/4] Analyse de sentiment (FinBERT)...")
         analyzed_articles = self._analyze_articles(new_articles_raw)
-        print(f"   ✓ {len(analyzed_articles)} articles analysés")
+        print(f" {len(analyzed_articles)} articles analysés")
         
         # ÉTAPE 3 : SAUVEGARDE EN BASE
         print("\n[3/4] Sauvegarde dans la base de données...")
         added_count = self._save_to_database(analyzed_articles)
-        print(f"   ✓ {added_count} nouveaux articles ajoutés")
+        print(f" {added_count} nouveaux articles ajoutés")
         
         # ÉTAPE 4 : MISE À JOUR HISTORIQUE
         print("\n[4/4] Mise à jour de l'historique des tendances...")
         self._update_trend_history(analyzed_articles, timestamp)
-        print("   ✓ Historique mis à jour")
+        print(" Historique mis à jour")
         
         # Nettoyage
         if temp_raw_file.exists():
@@ -171,7 +167,7 @@ class ContinuousPipelineRunner:
             
             # Vérification du code retour
             if result.returncode != 0:
-                print(f"   ⚠ Scrapy s'est terminé avec le code {result.returncode}")
+                print(f" Scrapy s'est terminé avec le code {result.returncode}")
             
             # Lecture du fichier généré
             if output_file.exists() and output_file.stat().st_size > 5:
@@ -182,10 +178,10 @@ class ContinuousPipelineRunner:
                 if isinstance(data, list):
                     return data
                 else:
-                    print(f"   ⚠ Format JSON invalide (attendu: liste)")
+                    print(f" Format JSON invalide (attendu: liste)")
                     return []
             else:
-                print(f"   ⚠ Fichier de sortie vide ou inexistant")
+                print(f" Fichier de sortie vide ou inexistant")
                 return []
             
         except subprocess.CalledProcessError as e:
@@ -234,9 +230,9 @@ class ContinuousPipelineRunner:
                 print(f"Erreur sauvegarde article : {e}")
         
         if added_count > 0:
-            print(f"   ✓ {added_count} nouveaux articles ajoutés (Doublons ignorés)")
+            print(f" {added_count} nouveaux articles ajoutés (Doublons ignorés)")
         else:
-            print(f"   ✓ Aucune nouveauté (tous les articles existent déjà)")
+            print(f" Aucune nouveauté (tous les articles existent déjà)")
             
         return added_count
     
@@ -307,16 +303,15 @@ class ContinuousPipelineRunner:
         with open(archive_path, 'w', encoding='utf-8') as f:
             json.dump(archive_data, f, indent=4, ensure_ascii=False)
         
-        print(f"   ✓ Articles archivés dans {archive_path.name}")
+        print(f" Articles archivés dans {archive_path.name}")
 
 
 def main():
     """Point d'entrée du pipeline continu."""
     runner = ContinuousPipelineRunner(
-        scrapy_project_path="infrastructure/datasources/cnbc_scraper",
-        spider_name="cnbc",
+        scrapy_project_path="infrastructure/datasources/yahoo_scraper",
+        spider_name="yahoo_scraper",
         output_dir="outputs",
-        cycle_interval_seconds=3600  # 1 heure
     )
     
     runner.run_continuous()

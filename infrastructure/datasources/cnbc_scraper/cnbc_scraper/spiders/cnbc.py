@@ -4,15 +4,7 @@ from datetime import datetime
 class CnbcSpider(scrapy.Spider):
     name = "cnbc"
     
-    # On garde les tickers, mais on enlève la map complexe pour être plus souple
     tickers = ["TSLA", "AAPL", "GOOGL", "MSFT", "AMZN", "NVDA", "META"]
-
-    custom_settings = {
-        'ROBOTSTXT_OBEY': False,
-        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'DOWNLOAD_DELAY': 0.5,
-        'LOG_LEVEL': 'INFO'
-    }
 
     def start_requests(self):
         for ticker in self.tickers:
@@ -23,7 +15,7 @@ class CnbcSpider(scrapy.Spider):
     def parse_list(self, response):
         ticker = response.meta['ticker']
         
-        # 1. STRATÉGIE "LARGE BANDE" POUR LES LIENS
+        # 1. STRATÉGIE POUR TROUVER TOUS LES LIENS D'ARTICLES
         all_hrefs = response.css('a::attr(href)').getall()
         
         links_to_scrape = []

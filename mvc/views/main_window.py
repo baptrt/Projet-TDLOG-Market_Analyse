@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QTableWidgetItem, QHeaderView, QLabel, QLineEdit, QComboBox, QDialog, QPushButton, QTableWidget, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QTableWidgetItem
 from PyQt6.QtGui import QColor
 from mvc.views.components.sentiment_bar_chart import SentimentBarChart
 from mvc.views.components.sentiment_evolution_chart import SentimentEvolutionChart
