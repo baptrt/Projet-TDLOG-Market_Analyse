@@ -27,7 +27,7 @@ class FinBERTSentimentAnalyzer:
         self.tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
         self.model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert")
         self.id2label = self.model.config.id2label
-        print("[FinBERT] ✓ Modèle chargé avec succès")
+        print("[FinBERT] Modèle chargé avec succès")
     
     def analyze_text(self, text: str) -> SentimentResult:
         """

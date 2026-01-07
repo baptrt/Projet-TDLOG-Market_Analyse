@@ -17,8 +17,8 @@ class ScrapingWorker(QObject):
     def run(self):
         # Configuration du runner pour un tir unique
         runner = ContinuousPipelineRunner(
-            scrapy_project_path="infrastructure/datasources/yahoo_scraper",
-            spider_name="yahoo_scraper",
+            scrapy_project_path="infrastructure/datasources/cnbc_scraper",
+            spider_name="cnbc",
             output_dir="outputs"
         )
         # Lancement du scraping (prend du temps)
