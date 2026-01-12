@@ -52,16 +52,24 @@ PROJET-TDLOG/
 │   └── controllers/                # CONTRÔLEUR MVC
 │       └── main_controller.py      # Gestion événements UI
 │
-├── outputs/                        # RÉSULTATS
-│   ├── market_sentiment.db         # Base de données SQLite
+├── outputs/                           # RÉSULTATS
+│   ├── market_sentiment.db            # Base de données SQLite
 │   ├── scraped_articles_archive.json  # Archive des articles scrapés
-│   └── trend_history.json          # Historique des tendances
+│   └── trend_history.json             # Historique des tendances
 │
 ├── scripts/                        # Scripts utilitaires
 │   └── view_scraped_archive.py     # Visualiser l'archive
 │
-├── tests/                          # Tests unitaires et d'intégration
-├── config/                         # Configuration
+tests/
+├── unit/
+│   ├── test_repository.py          # Tests accès base de données
+│   ├── test_aggregator.py          # Tests agrégation sentiments
+│   ├── test_sentiment_analyzer.py  # Tests analyse de sentiment
+│   └── test_statistics.py          # Tests analyses statistiques
+├── integration/
+│   └── test_pipeline.py            # Test de l'intégration
+├── data/
+│   └── test_articles.json          # Données de test
 └── requirements.txt
 ```
 

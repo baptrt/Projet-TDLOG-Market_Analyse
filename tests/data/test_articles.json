@@ -1,0 +1,42 @@
+[
+  {
+    "company": "Tesla",
+    "title": "Tesla reports record profits",
+    "content": "Tesla exceeded all expectations with stellar Q4 results. Revenue up 50%.",
+    "source": "CNBC",
+    "url": "https://example.com/tesla1",
+    "published_date": "2024-01-15"
+  },
+  {
+    "company": "Apple",
+    "title": "Apple faces supply chain issues",
+    "content": "Production delays affect iPhone availability. Stock drops 5%.",
+    "source": "Reuters",
+    "url": "https://example.com/apple1",
+    "published_date": "2024-01-14"
+  },
+  {
+    "company": "Microsoft",
+    "title": "Microsoft launches new AI features",
+    "content": "The company integrates ChatGPT into Office suite. Users excited.",
+    "source": "TechCrunch",
+    "url": "https://example.com/msft1",
+    "published_date": "2024-01-13"
+  },
+  {
+    "company": "Tesla",
+    "title": "Neutral update on Tesla operations",
+    "content": "The company maintains steady production levels in Q1.",
+    "source": "Bloomberg",
+    "url": "https://example.com/tesla2",
+    "published_date": "2024-01-12"
+  },
+  {
+    "company": "Apple",
+    "title": "Apple announces record App Store revenue",
+    "content": "App Store generates $100 billion in 2023. Developers celebrate.",
+    "source": "WSJ",
+    "url": "https://example.com/apple2",
+    "published_date": "2024-01-11"
+  }
+]
