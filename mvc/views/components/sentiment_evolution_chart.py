@@ -65,8 +65,11 @@ class SentimentEvolutionChart(FigureCanvasQTAgg):
         self.ax.set_title("Évolution du Sentiment (Temps Réel)")
         self.ax.axhline(y=0, color='black', linestyle='--', linewidth=0.5, alpha=0.3)
         
-        # Format des dates sur l'axe X
-        self.ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+        # Format des dates sur l'axe X (matplotlib choisit le format adapté)
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.AutoDateFormatter(locator)
+        self.ax.xaxis.set_major_locator(locator)
+        self.ax.xaxis.set_major_formatter(formatter)
         self.fig.autofmt_xdate()
         
         # Légende à l'extérieur du graphique
