@@ -95,12 +95,12 @@ python run.py
 ```
 
 **Cela démarre simultanément :**
-1. Le **pipeline de scraping** en arrière-plan (cycle toutes les heures)
+1. Le **pipeline de scraping** en arrière-plan 
 2. L'**interface graphique** dans la fenêtre principale
 
 ### Ce qui se passe automatiquement :
 
-1. **Scraping** : Récupère les nouveaux articles de CNBC toutes les heures
+1. **Scraping** : Récupère les nouveaux articles de CNBC lorsque l'utilisateur clique "Rafraîchir"
 2. **Analyse** : Analyse le sentiment de chaque article avec FinBERT
 3. **Sauvegarde** : Stocke les résultats dans :
    - `outputs/market_sentiment.db` (base SQLite)
