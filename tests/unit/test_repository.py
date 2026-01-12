@@ -4,7 +4,6 @@ import unittest
 import os
 import tempfile
 from infrastructure.database.repository import DatabaseRepository
-from domain.entities.article import Article
 
 class TestDatabaseRepository(unittest.TestCase):
     """Tests unitaires du Repository (accès DB)."""

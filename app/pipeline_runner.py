@@ -25,8 +25,8 @@ class ContinuousPipelineRunner:
     
     def __init__(
         self,
-        scrapy_project_path: str = "infrastructure/datasources/yahoo_scraper",
-        spider_name: str = "yahoo_scraper",
+        scrapy_project_path: str = "infrastructure/datasources/cnbc_scraper",
+        spider_name: str = "cnbc",
         output_dir: str = "outputs",
     ):
         # Résolution des chemins absolus depuis la racine du projet
@@ -309,8 +309,8 @@ class ContinuousPipelineRunner:
 def main():
     """Point d'entrée du pipeline continu."""
     runner = ContinuousPipelineRunner(
-        scrapy_project_path="infrastructure/datasources/yahoo_scraper",
-        spider_name="yahoo_scraper",
+        scrapy_project_path="infrastructure/datasources/cnbc_scraper",
+        spider_name="cnbc",
         output_dir="outputs",
     )
     
