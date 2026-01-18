@@ -1,57 +1,53 @@
 import sys
 import os
+import datetime
 
-# Ajout du chemin parent
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# 1. Configuration des chemins
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
-from Controller.sentiment import SentimentAnalyzer
+# 2. Nouveaux Imports
+from domain.services.sentiment_analyzer import FinBERTSentimentAnalyzer
+from domain.entities.article import Article
 
-def test_finance_complex_cases():
-    analyzer = SentimentAnalyzer()
+def test_sarcasm():
+    print("--- TEST DE DÉTECTION DE SARCASME ---")
     
-    # Format : (Phrase, Sentiment Réel Attendu)
-    financial_cases = [
-        # --- 1. L'Ironie pure (Mots positifs pour un désastre) ---
-        ("Quelle brillante stratégie de la direction : l'action a été divisée par deux en un mois.", "négatif"),
-        ("Merci pour cette 'performance' incroyable, mon portefeuille a fondu comme neige au soleil.", "négatif"),
-        ("Un grand bravo aux analystes qui recommandaient d'acheter juste avant le krach.", "négatif"),
+    try:
+        analyzer = FinBERTSentimentAnalyzer()
+    except Exception as e:
+        print(f"❌ Erreur init : {e}")
+        return
 
-        # --- 2. L'Euphémisme (Minimiser une catastrophe) ---
-        ("Ce n'est pas une perte, c'est juste une 'réallocation involontaire' de mes fonds vers le néant.", "négatif"),
-        ("L'entreprise n'est pas en faillite, elle traverse juste une 'crise de liquidité permanente'.", "négatif"),
-        
-        # --- 3. Le "Buy High Sell Low" (Le classique des traders) ---
-        ("Ma technique favorite : acheter au plus haut historique et revendre quand ça vaut zéro.", "négatif"),
-        
-        # --- 4. La fausse bonne nouvelle ---
-        ("Super, les dividendes augmentent de 1 centime alors que l'action en a perdu 50 euros.", "négatif")
+    # Phrases pièges
+    sarcastic_texts = [
+        "Super, l'action a encore perdu 10%. Quelle journée fantastique.",
+        "Génial, exactement ce dont on avait besoin : une nouvelle faillite.",
+        "Bravo à la direction pour cette magnifique perte record."
     ]
 
-    print("--- TEST ANALYSE : SARCASME FINANCIER DIFFICILE ---\n")
-
-    score = 0
-    for phrase, attendu in financial_cases:
-        # 1. Analyse
-        result_tuple = analyzer.analyze_article(phrase)
-        result_label = result_tuple[0] # On garde juste le label (ex: 'positif')
+    for text in sarcastic_texts:
+        # On emballe chaque phrase dans un Article
+        dummy_article = Article(
+            title="Test Sarcasme",
+            content=text,
+            company="Sarcasm Corp",
+            source="Test",
+            url="http://test",
+            published_date=datetime.datetime.now()
+        )
         
-        print(f"Phrase : \"{phrase}\"")
-        print(f"   -> Sens réel attendu : {attendu}")
-        print(f"   -> L'IA a détecté    : {result_label} (Score: {result_tuple[1]:.4f})")
-        
-        # 2. Verdict
-        if attendu in result_label.lower():
-            print("L'IA a compris le sarcasme !")
-            score += 1
-        elif result_label == "neutre":
-            print("L'IA est confuse (Neutre)")
+        # Analyse
+        if hasattr(analyzer, 'analyze_article'):
+            result = analyzer.analyze_article(dummy_article)
         else:
-            print("L'IA s'est fait piéger (A pris le positif au premier degré)")
-        
-        print("-" * 50)
-
-    print(f"\nScore de détection du sarcasme : {score}/{len(financial_cases)}")
-    print("\nNote : Il est NORMAL que le score soit bas. FinBERT n'est pas entraîné pour l'ironie.")
+            result = analyzer.analyze(dummy_article)
+            
+        print(f"Phrase : '{text}'")
+        print(f" -> Détecté : {result.sentiment_label} (Score: {result.sentiment_score:.2f})")
+        print("-" * 20)
 
 if __name__ == "__main__":
-    test_finance_complex_cases()
+    test_sarcasm()
