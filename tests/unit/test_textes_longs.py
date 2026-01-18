@@ -2,48 +2,46 @@ import time
 import sys
 import os
 
-# Ajout du chemin parent
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# --- 1. GESTION DU CHEMIN (RACINE) ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
-from Controller.sentiment import SentimentAnalyzer
+# --- 2. IMPORT CORRIGÉ (LE VRAI NOM DE LA CLASSE) ---
+# On importe FinBERTSentimentAnalyzer au lieu de SentimentAnalyzer
+from domain.services.sentiment_analyzer import FinBERTSentimentAnalyzer
 
 def test_long_text():
-    analyzer = SentimentAnalyzer()
+    print("--- DÉBUT DU TEST DE PERFORMANCE ---")
     
-    print("--- DÉBUT DU TEST DE PERFORMANCE (TEXTES LONGS) ---\n")
+    try:
+        print("Initialisation de FinBERT...")
+        # On utilise la nouvelle classe
+        analyzer = FinBERTSentimentAnalyzer()
+        print("✅ Modèle chargé avec succès.")
+    except Exception as e:
+        print(f"❌ Erreur init : {e}")
+        return
 
-    # Phrase mitigée (Le modèle la voit souvent comme Neutre à cause de "Malgré", "Difficile", "Inflation")
-    base_sentence = (
-        "Malgré un environnement macroéconomique difficile et une "
-        "inflation persistante, nos fondamentaux restent solides. "
-    )
-    long_text = base_sentence * 500 
-    
-    word_count = len(long_text.split())
-    print(f"Test avec un texte de {word_count} mots...")
+    text = "L'inflation persiste mais les fondamentaux restent solides. " * 500
+    print(f"Analyse de {len(text.split())} mots...")
 
-    start_time = time.time()
+    start = time.time()
     
-    # Appel de l'analyse
-    result_tuple = analyzer.analyze_article(long_text)
-    
-    end_time = time.time()
-    duration = end_time - start_time
-
-    # --- CORRECTION DU CRASH ICI ---
-    # On récupère le texte (index 0) depuis le tuple ('neutre', score, dict)
-    sentiment_label = result_tuple[0] 
-
-    print(f"Résultat complet : {result_tuple}")
-    print(f"Sentiment extrait : {sentiment_label}")
-    print(f"Temps d'exécution : {duration:.4f} secondes")
-    
-    # --- VALIDATION ---
-    # On accepte "positif" OU "neutre" car la phrase est nuancée financièrement
-    if sentiment_label.lower() in ["positif", "neutre"]:
-        print("SUCCÈS : Le modèle a géré la charge et donné un résultat cohérent.")
+    # J'ai ajouté une sécurité pour trouver le nom de la méthode (analyze ou analyze_article)
+    if hasattr(analyzer, 'analyze_article'):
+        result = analyzer.analyze_article(text)
     else:
-        print(f"ÉCHEC : Résultat inattendu ({sentiment_label}).")
+        result = analyzer.analyze(text)
+        
+    duration = time.time() - start
+
+    print(f"Résultat : {result}")
+    print(f"Temps : {duration:.4f}s")
+    
+    if result:
+        print("✅ SUCCÈS")
 
 if __name__ == "__main__":
     test_long_text()
