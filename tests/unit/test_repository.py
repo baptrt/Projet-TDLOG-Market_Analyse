@@ -12,7 +12,6 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from infrastructure.database.repository import DatabaseRepository
-from domain.entities.article import Article
 
 class TestDatabaseRepository(unittest.TestCase):
     """Tests unitaires du Repository (accès DB)."""

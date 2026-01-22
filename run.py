@@ -76,11 +76,12 @@ def main():
     
     # Vérification de la structure
     project_root = Path(__file__).parent
-    outputs_dir = project_root / "outputs"
-    outputs_dir.mkdir(exist_ok=True)
+    # Dossier de données persistantes (BDD + historiques)
+    data_dir = project_root / "data"
+    data_dir.mkdir(exist_ok=True)
     
     print(f"\n[INIT] Racine du projet : {project_root}")
-    print(f"[INIT] Dossier outputs : {outputs_dir}")
+    print(f"[INIT] Dossier data : {data_dir}")
     
     print("Mode MANUEL activé : Cliquez sur Rafraîchir pour scraper.")
     

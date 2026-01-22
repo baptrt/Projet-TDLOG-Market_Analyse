@@ -28,6 +28,9 @@ class UIState:
     chart_data: List[Dict] = field(default_factory=list)
     trend_history: List[Dict] = field(default_factory=list)
     
+    # Favoris
+    show_favorites_only: bool = False
+    
     def get_unique_companies(self) -> List[str]:
         """Retourne la liste des entreprises uniques."""
         if not self.all_articles:
