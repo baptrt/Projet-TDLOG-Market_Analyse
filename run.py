@@ -1,16 +1,46 @@
 # run.py - Point d'entrée unique du projet
 
 import sys
+import os
+import site
 from pathlib import Path
-
 from PyQt6.QtWidgets import QApplication
 
-# Import des composants
+# --- BLOC DE COMPATIBILITÉ WINDOWS (Invisible pour Mac/Linux) ---
+# Ce bloc ne s'exécute QUE si l'ordinateur est un Windows ('nt')
+if os.name == 'nt':
+    try:
+        # Patch pour l'erreur "OpenMP" fréquente sur Windows
+        os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+        
+        # Patch pour les DLLs Python 3.13 / Torch
+        site_packages = site.getsitepackages()
+        for p in site_packages:
+            candidate = os.path.join(p, 'torch', 'lib')
+            if os.path.exists(candidate):
+                # 1. Ajout au PATH
+                os.environ['PATH'] = candidate + os.pathsep + os.environ['PATH']
+                # 2. Ajout sécurisé via os.add_dll_directory
+                if hasattr(os, 'add_dll_directory'):
+                    try: os.add_dll_directory(candidate)
+                    except: pass
+                # 3. Pré-chargement des dépendances critiques
+                import ctypes
+                try:
+                    ctypes.cdll.LoadLibrary(os.path.join(candidate, 'c10.dll'))
+                    ctypes.cdll.LoadLibrary(os.path.join(candidate, 'torch_cpu.dll'))
+                except: pass
+                break
+    except Exception as e:
+        print(f"⚠️ Note compatibilité Windows : {e}")
+# -------------------------------------------------------------
+
+# Import des composants (Après le patch !)
 from mvc.views.main_window import MainWindow
 from mvc.controllers.main_controller import MainController
 from infrastructure.database.repository import DatabaseRepository
-from app.pipeline_runner import ContinuousPipelineRunner
-
+# (Note: PipelineRunner n'est pas utilisé directement ici, mais l'import ne gêne pas)
+from app.pipeline_runner import ContinuousPipelineRunner 
 
 def start_gui():
     """
@@ -25,6 +55,8 @@ def start_gui():
     # Initialisation MVC
     db_repository = DatabaseRepository()
     view = MainWindow()
+    
+    # Le contrôleur a besoin de la Vue et du Repository
     controller = MainController(view, db_repository)
     
     # Affichage de la fenêtre
