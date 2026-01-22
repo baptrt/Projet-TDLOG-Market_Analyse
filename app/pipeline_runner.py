@@ -27,7 +27,7 @@ class ContinuousPipelineRunner:
         self,
         scrapy_project_path: str = "infrastructure/datasources/cnbc_scraper",
         spider_name: str = "cnbc",
-        output_dir: str = "outputs",
+        output_dir: str = "data",
     ):
         # Résolution des chemins absolus depuis la racine du projet
         self.project_root = Path(__file__).parent.parent.resolve()
@@ -53,7 +53,7 @@ class ContinuousPipelineRunner:
         self.aggregator = SentimentAggregator()
         self.db_repository = DatabaseRepository()
         
-        # Création du dossier outputs
+        # Création du dossier data
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         self.trend_history_path = self.output_dir / "trend_history.json"
@@ -68,7 +68,7 @@ class ContinuousPipelineRunner:
             with open(self.trend_history_path, 'w', encoding='utf-8') as f:
                 json.dump([], f, indent=4)
     
-    def _run_single_cycle(self, cycle_number: int, timestamp: str):
+    def _run_single_cycle(self, cycle_number: int, timestamp: str) -> dict:
         """Exécute un seul cycle du pipeline."""
         # Fichiers pour ce cycle
         temp_raw_file = self.output_dir / f"temp_scraping_{cycle_number}.json"
@@ -82,7 +82,7 @@ class ContinuousPipelineRunner:
             print("Aucun nouvel article trouvé")
             if temp_raw_file.exists():
                 temp_raw_file.unlink()
-            return
+            return {"found": 0, "added": 0}
         
         print(f" {len(new_articles_raw)} articles récupérés")
         
@@ -107,8 +107,11 @@ class ContinuousPipelineRunner:
         # Nettoyage
         if temp_raw_file.exists():
             temp_raw_file.unlink()
+        
+        # Retourne un bilan pour l'UI
+        return {"found": len(new_articles_raw), "added": added_count}
             
-    def run_once(self):
+    def run_once(self) -> dict:
         """
         Lance UN SEUL cycle de scraping (Mode Manuel).
         Utilisé par le bouton 'Rafraîchir' de l'interface.
@@ -121,8 +124,9 @@ class ContinuousPipelineRunner:
         try:
             # On appelle la méthode qui fait tout le travail
             # On met '1' comme numéro de cycle par défaut
-            self._run_single_cycle(1, timestamp)
+            result = self._run_single_cycle(1, timestamp)
             print("\n Scraping manuel terminé avec succès.")
+            return result
             
         except Exception as e:
             print(f"\n Erreur critique durant le scraping manuel : {e}")
@@ -311,7 +315,7 @@ def main():
     runner = ContinuousPipelineRunner(
         scrapy_project_path="infrastructure/datasources/cnbc_scraper",
         spider_name="cnbc",
-        output_dir="outputs",
+        output_dir="data",
     )
     
     runner.run_continuous()

@@ -52,8 +52,9 @@ PROJET-TDLOG/
 │   └── controllers/                # CONTRÔLEUR MVC
 │       └── main_controller.py      # Gestion événements UI
 │
-├── outputs/                           # RÉSULTATS
-│   ├── market_sentiment.db            # Base de données SQLite
+├── data/                              # RÉSULTATS
+│   ├── articles.db                    # Base de données SQLite (articles)
+│   ├── users.db                       # Base de données SQLite (utilisateurs)
 │   ├── scraped_articles_archive.json  # Archive des articles scrapés
 │   └── trend_history.json             # Historique des tendances
 │
@@ -103,9 +104,10 @@ python run.py
 1. **Scraping** : Récupère les nouveaux articles de CNBC lorsque l'utilisateur clique "Rafraîchir"
 2. **Analyse** : Analyse le sentiment de chaque article avec FinBERT
 3. **Sauvegarde** : Stocke les résultats dans :
-   - `outputs/market_sentiment.db` (base SQLite)
-   - `outputs/scraped_articles_archive.json` (archive JSON)
-   - `outputs/trend_history.json` (historique des tendances)
+   - `data/articles.db` (base SQLite des articles)
+   - `data/users.db` (base SQLite des utilisateurs)
+   - `data/scraped_articles_archive.json` (archive JSON)
+   - `data/trend_history.json` (historique des tendances)
 
 ### Interface graphique
 
@@ -174,6 +176,7 @@ Le projet suit une **architecture en couches** :
 
 | Fichier | Description |
 |---------|-------------|
-| `outputs/market_sentiment.db` | Base SQLite (articles + sentiments) |
-| `outputs/scraped_articles_archive.json` | Archive complète des articles bruts scrapés |
-| `outputs/trend_history.json` | Historique des scores de sentiment par entreprise |
+| `data/articles.db` | Base SQLite (articles + sentiments) |
+| `data/users.db` | Base SQLite (utilisateurs + favoris) |
+| `data/scraped_articles_archive.json` | Archive complète des articles bruts scrapés |
+| `data/trend_history.json` | Historique des scores de sentiment par entreprise |

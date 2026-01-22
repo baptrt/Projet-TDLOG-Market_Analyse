@@ -17,16 +17,46 @@ class MainWindow(QtWidgets.QWidget):
     show_charts_clicked = QtCore.pyqtSignal()
     refresh_clicked = QtCore.pyqtSignal()  
     
+    logout_clicked = QtCore.pyqtSignal()
+    toggle_favorite_clicked = QtCore.pyqtSignal(str)  # company
+    show_favorites_only_changed = QtCore.pyqtSignal(bool)
+    
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Market Sentiment Analyzer")
         self.resize(1000, 600)
+        self._favorite_actions = {}
         
         self._setup_ui()
         self._connect_signals()
     
     def _setup_ui(self):
         """Construit l'interface graphique."""
+        # Barre utilisateur
+        user_layout = QtWidgets.QHBoxLayout()
+        self.user_label = QtWidgets.QLabel("Mode invité")
+        self.user_label.setStyleSheet("font-weight: bold;")
+        user_layout.addWidget(self.user_label)
+        user_layout.addStretch()
+        
+        self.favorites_only_checkbox = QtWidgets.QCheckBox("Favoris uniquement")
+        self.favorites_only_checkbox.setEnabled(False)
+        user_layout.addWidget(self.favorites_only_checkbox)
+        
+        self.favorites_menu = QtWidgets.QMenu(self)
+        self.favorites_menu_button = QtWidgets.QToolButton()
+        self.favorites_menu_button.setText("Sélectionner favoris")
+        self.favorites_menu_button.setMenu(self.favorites_menu)
+        self.favorites_menu_button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.favorites_menu_button.setMinimumWidth(170)
+        self.favorites_menu_button.setStyleSheet("padding-right: 18px;")
+        self.favorites_menu_button.setEnabled(False)
+        user_layout.addWidget(self.favorites_menu_button)
+        
+        self.logout_button = QtWidgets.QPushButton("Se déconnecter")
+        self.logout_button.setEnabled(False)
+        user_layout.addWidget(self.logout_button)
+
         # Barre de filtres
         filter_layout = QtWidgets.QHBoxLayout()
         
@@ -87,11 +117,14 @@ class MainWindow(QtWidgets.QWidget):
         
         self.chart_button = QtWidgets.QPushButton("Afficher les graphiques")
         button_layout.addWidget(self.chart_button)
+
+        
         
         detail_layout.addLayout(button_layout)
         
         # Layout principal
         main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.addLayout(user_layout)
         main_layout.addLayout(filter_layout)
         main_layout.addWidget(self.status_label)
         main_layout.addWidget(self.table)
@@ -106,6 +139,9 @@ class MainWindow(QtWidgets.QWidget):
         self.open_button.clicked.connect(self.open_article_clicked.emit)
         self.chart_button.clicked.connect(self.show_charts_clicked.emit)
         self.refresh_button.clicked.connect(self.refresh_clicked.emit)
+        
+        self.logout_button.clicked.connect(self.logout_clicked.emit)
+        self.favorites_only_checkbox.toggled.connect(self.show_favorites_only_changed.emit)
     
     def _on_selection_changed(self):
         """Gère le changement de sélection dans le tableau."""
@@ -119,12 +155,15 @@ class MainWindow(QtWidgets.QWidget):
         self.company_filter.clear()
         self.company_filter.addItem("Toutes les entreprises")
         self.company_filter.addItems(companies)
+        self._build_favorites_menu(companies, [])
         
-    def update_table(self, articles, highlight_ids=None):
+    def update_table(self, articles, user_favorites=None):
         """
         Affiche les articles dans le tableau avec coloration par SENTIMENT.
         Positif = Vert, Négatif = Rouge, Neutre = Jaune.
         """
+        favorites = set(user_favorites or [])
+        self._sync_favorites_menu(favorites)
         self.table.setRowCount(len(articles))
         self.table.setSortingEnabled(False) # Désactiver le tri pendant l'insertion
 
@@ -134,7 +173,12 @@ class MainWindow(QtWidgets.QWidget):
             self.table.setItem(row_idx, 0, QTableWidgetItem(str(article.get('published_date', 'N/A'))))
             
             # Col 1: Entreprise
-            self.table.setItem(row_idx, 1, QTableWidgetItem(article.get('company', 'N/A')))
+            company = article.get('company', 'N/A')
+            if company in favorites:
+                company_text = f"* {company}"
+            else:
+                company_text = company
+            self.table.setItem(row_idx, 1, QTableWidgetItem(company_text))
             
             # Col 2: Titre
             self.table.setItem(row_idx, 2, QTableWidgetItem(article.get('title', 'Sans titre')))
@@ -262,3 +306,39 @@ class MainWindow(QtWidgets.QWidget):
         """Cache l'indicateur de chargement."""
         self.status_label.setText("")
         self.refresh_button.setEnabled(True)
+
+    def set_user(self, username: str):
+        """Affiche l'utilisateur connecté."""
+        self.user_label.setText(f"Connecté : {username}")
+        self.logout_button.setEnabled(True)
+        self.favorites_only_checkbox.setEnabled(True)
+        self.favorites_menu_button.setEnabled(True)
+
+    def clear_user(self):
+        """Remet l'interface en mode invité."""
+        self.user_label.setText("Mode invité")
+        self.logout_button.setEnabled(False)
+        self.favorites_only_checkbox.setChecked(False)
+        self.favorites_only_checkbox.setEnabled(False)
+        self.favorites_menu_button.setEnabled(False)
+
+    def _build_favorites_menu(self, companies, favorites):
+        """Construit le menu des favoris."""
+        self.favorites_menu.clear()
+        self._favorite_actions = {}
+        
+        for company in sorted(companies):
+            action = self.favorites_menu.addAction(company)
+            action.setCheckable(True)
+            action.setChecked(company in favorites)
+            action.toggled.connect(lambda checked, c=company: self.toggle_favorite_clicked.emit(c))
+            self._favorite_actions[company] = action
+
+    def _sync_favorites_menu(self, favorites):
+        """Met à jour l'état coché des favoris."""
+        if not self._favorite_actions:
+            return
+        for company, action in self._favorite_actions.items():
+            action.blockSignals(True)
+            action.setChecked(company in favorites)
+            action.blockSignals(False)

@@ -9,14 +9,14 @@ class DatabaseRepository:
     Version 'Stateless' avec DEBUG PATH.
     """
     
-    def __init__(self, db_name: str = "market_sentiment.db"):
+    def __init__(self, db_name: str = "articles.db"):
         # On remonte : repository.py -> database -> infrastructure -> TDLOG (Racine)
         current_file = os.path.abspath(__file__)
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
-        output_dir = os.path.join(base_dir, "outputs")
+        data_dir = os.path.join(base_dir, "data")
         
-        os.makedirs(output_dir, exist_ok=True)
-        self.db_path = os.path.join(output_dir, db_name)
+        os.makedirs(data_dir, exist_ok=True)
+        self.db_path = os.path.join(data_dir, db_name)
         
         # Initialisation immédiate de la table
         self._create_tables()
@@ -108,6 +108,10 @@ class DatabaseRepository:
         except Exception as e:
             print(f"Erreur SQL fetch_all : {e}")
             return []
+
+    def get_all_articles(self) -> List[Dict]:
+        """Compatibilité avec l'ancien nom de méthode."""
+        return self.fetch_all_articles()
     
     def fetch_articles_by_company(self, company: str) -> List[Dict]:
         try:
