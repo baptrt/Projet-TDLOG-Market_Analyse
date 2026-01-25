@@ -1,14 +1,12 @@
 import sys
 import os
 import datetime
-
-# 1. Configuration des chemins
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 if project_root not in sys.path:
     sys.path.append(project_root)
+    # Ajoute la racine du projet pour les imports.
 
-# 2. Nouveaux Imports
 from domain.services.sentiment_analyzer import FinBERTSentimentAnalyzer
 from domain.entities.article import Article
 
@@ -18,10 +16,10 @@ def test_sarcasm():
     try:
         analyzer = FinBERTSentimentAnalyzer()
     except Exception as e:
-        print(f"❌ Erreur init : {e}")
+        print(f"Erreur init : {e}")
         return
 
-    # Phrases pièges
+    # Exemples volontairement ambigus.
     sarcastic_texts = [
         "Super, l'action a encore perdu 10%. Quelle journée fantastique.",
         "Génial, exactement ce dont on avait besoin : une nouvelle faillite.",
@@ -29,7 +27,7 @@ def test_sarcasm():
     ]
 
     for text in sarcastic_texts:
-        # On emballe chaque phrase dans un Article
+        # Texte emballé en Article pour l'analyse.
         dummy_article = Article(
             title="Test Sarcasme",
             content=text,
@@ -39,7 +37,6 @@ def test_sarcasm():
             published_date=datetime.datetime.now()
         )
         
-        # Analyse
         if hasattr(analyzer, 'analyze_article'):
             result = analyzer.analyze_article(dummy_article)
         else:
