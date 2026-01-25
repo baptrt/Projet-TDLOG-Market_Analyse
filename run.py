@@ -39,8 +39,6 @@ if os.name == 'nt':
 from mvc.views.main_window import MainWindow
 from mvc.controllers.main_controller import MainController
 from infrastructure.database.repository import DatabaseRepository
-# (Note: PipelineRunner n'est pas utilisé directement ici, mais l'import ne gêne pas)
-from app.pipeline_runner import ContinuousPipelineRunner 
 
 def start_gui():
     """

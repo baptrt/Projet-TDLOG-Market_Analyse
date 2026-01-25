@@ -52,7 +52,7 @@ class CnbcSpider(scrapy.Spider):
         
         target_links = unique_links[:20]
         
-        self.logger.info(f"[{ticker}] 🔍 {len(target_links)} articles potentiels détectés.")
+        self.logger.info(f"[{ticker}] {len(target_links)} articles potentiels détectés.")
 
         for link in target_links:
             yield scrapy.Request(
