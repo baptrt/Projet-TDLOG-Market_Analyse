@@ -9,8 +9,6 @@ from PyQt6.QtWidgets import QApplication
 from mvc.views.main_window import MainWindow
 from mvc.controllers.main_controller import MainController
 from infrastructure.database.repository import DatabaseRepository
-from app.pipeline_runner import ContinuousPipelineRunner
-
 
 def start_gui():
     """
