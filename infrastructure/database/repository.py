@@ -128,6 +128,23 @@ class DatabaseRepository:
             print(f"Erreur SQL fetch_company : {e}")
             return []
 
+    def update_sentiment(self, article_id: int, label: str, score: float, probas: Dict) -> bool:
+        """Met à jour le sentiment d'un article existant."""
+        probas_json = json.dumps(probas or {})
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE articles
+                    SET sentiment_label = ?, sentiment_score = ?, sentiment_probas = ?
+                    WHERE id = ?
+                """, (label, score, probas_json, article_id))
+                conn.commit()
+                return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Erreur SQL update_sentiment : {e}")
+            return False
+
     def _row_to_dict(self, row) -> Dict:
         return {
             "id": row[0],
