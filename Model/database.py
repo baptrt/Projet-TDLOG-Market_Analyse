@@ -70,17 +70,17 @@ class DatabaseHandler:
                 status
             ))
             self.conn.commit()
-            return True # <--- IMPORTANT POUR LE TEST
+            return True # POUR LE TEST
         except sqlite3.Error as e:
             print(f" Erreur SQL : {e}")
-            return False # <--- IMPORTANT POUR LE TEST
+            return False # POUR LE TEST
 
     def get_pending_articles(self):
         """Récupère les articles qui n'ont pas encore été analysés (pour le pipeline)."""
         # On renvoie l'ID et le TEXTE pour l'analyseur
         self.cursor.execute("SELECT id, full_text FROM articles WHERE status = 'A_TRAITER'")
         # Renvoie une liste de tuples : [(1, "Texte..."), (2, "Autre texte...")]
-        # On transforme ça en liste de dictionnaires pour être plus propre
+        # On transforme ça en liste de dictionnaires 
         rows = self.cursor.fetchall()
         return [{'id': row[0], 'full_text': row[1]} for row in rows]
 
@@ -99,7 +99,7 @@ class DatabaseHandler:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            print(f"❌ Erreur Update : {e}")
+            print(f" Erreur Update : {e}")
             return False
 
     def fetch_all_articles(self):
@@ -109,11 +109,9 @@ class DatabaseHandler:
         
         articles_list = []
         for row in rows:
-            # Attention aux index car on a ajouté 'status' à la fin !
             # row[10] = probas, row[11] = status
             probas_txt = row[10]
             
-            # --- C'EST ICI QUE TON FICHIER ETAIT COUPE ---
             probas_dict = json.loads(probas_txt) if probas_txt else {}
 
             articles_list.append({
