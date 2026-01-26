@@ -7,6 +7,12 @@ import scrapy
 
 
 class YahooScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    company = scrapy.Field()
+    title = scrapy.Field()
+    publisher = scrapy.Field()
+    link = scrapy.Field()
+    summary = scrapy.Field()
+    time = scrapy.Field()
+    full_text = scrapy.Field()
+    uuid = scrapy.Field()
+    image_url = scrapy.Field()
