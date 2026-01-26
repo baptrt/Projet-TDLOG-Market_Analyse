@@ -32,7 +32,9 @@ PROJET-TDLOG/
 ├── infrastructure/                 # COUCHE DONNÉES
 │   ├── database/
 │   │   ├── repository.py           # Interface d'accès DB
-│   │   └── models.py               # Schéma SQLite
+│   │   ├── models.py               # Schéma SQLite (users/favoris)
+│   │   └── legacy/                 # DB legacy pour test d'intégration
+│   │       └── database_handler.py
 │   │
 │   └── datasources/
 │       ├── yahoo_scraper/
@@ -66,9 +68,12 @@ tests/
 │   ├── test_repository.py          # Tests accès base de données
 │   ├── test_aggregator.py          # Tests agrégation sentiments
 │   ├── test_sentiment_analyzer.py  # Tests analyse de sentiment
-│   └── test_statistics.py          # Tests analyses statistiques
+│   ├── test_statistics.py          # Tests analyses statistiques
+│   ├── test_sarcasme_complexe.py   # Cas sarcasme (qualitatif)
+│   └── test_textes_longs.py        # Texte long (performance)
 ├── integration/
-│   └── test_pipeline.py            # Test de l'intégration
+│   ├── test_pipeline.py            # Test du pipeline
+│   └── test_database_flow.py       # Test DB legacy (cycle de vie)
 ├── data/
 │   └── test_articles.json          # Données de test
 └── requirements.txt
@@ -167,6 +172,10 @@ Le projet suit une **architecture en couches** :
 2. **Couche Application** : Orchestration du pipeline
 3. **Couche Domaine** : Logique métier (analyse, agrégation)
 4. **Couche Infrastructure** : Accès aux données (DB, scraping)
+
+Note : un handler SQLite "legacy" est conservé dans
+`infrastructure/database/legacy/database_handler.py` pour un test
+d'intégration spécifique.
 
 ### Pattern MVC
 
