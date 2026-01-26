@@ -7,7 +7,7 @@ project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 sys.path.append(project_root)
 # Ajoute la racine du projet pour les imports.
 
-from Model.database import DatabaseHandler
+from infrastructure.database.legacy.database_handler import DatabaseHandler
 
 class TestDatabaseFlow(unittest.TestCase):
     """Test d'intégration dédié à la persistance des données (SQLite)"""
